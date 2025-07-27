@@ -85,7 +85,7 @@ def show_login():
         # Login form section
         st.markdown("<div style='margin-left: 40px;'margin-top: 80px;'>", unsafe_allow_html=True)
         with st.form("login_form"):
-            st.markdown("### Please enter your credentials")
+            st.markdown("### UAT Mode")
             username = st.text_input("Username", placeholder="Enter your username")
             password = st.text_input("Password", type="password", placeholder="Enter your password")
             
