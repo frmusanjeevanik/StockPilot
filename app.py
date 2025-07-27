@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import uuid
 import os  
-import json
+import jsone
 from datetime import datetime
 print("Current working directory:", os.getcwd())  # 👈 Add this line here
 from database import init_database
@@ -158,20 +158,7 @@ def show_main_content():
     
     if page == "Dashboard":
         dashboard.show()
-    elif page == "Case Entry":
-        case_entry.show()
-    elif page == "Analytics":
-        analytics.show()
-    elif page == "Reviewer Panel":
-        reviewer_panel.show()
-    elif page == "Approver Panel":
-        approver_panel.show()
-    elif page == "Legal Panel":
-        legal_panel.show()
-    elif page == "Closure Panel":
-        closure_panel.show()
-    elif page == "Admin Panel":
-        admin_panel.show()
+   
     else:
         st.error("Page not found")
 
