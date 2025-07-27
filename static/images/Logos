@@ -1,2 +1,2 @@
-st.image("attached_assets.png", width=120)   # Tathya
-st.image("attached_assets/abcl_logo.png", width=120)   # ABCL
+st.image("static/images/tathya.png", width=120)      # Tathya logo
+st.image("static/images/abcl_logo.jpg", width=120)   # ABCL logo
