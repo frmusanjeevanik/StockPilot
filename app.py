@@ -73,7 +73,7 @@ def show_login():
     
     with col1:
         # Tathya logo section
-        st.markdown("<div style='margin-left: 20px;'text-align: center; margin-top: 80px;'>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-left: 40px;'text-align: left; margin-top: 80px;'>", unsafe_allow_html=True)
         try:
             st.image("static/images/tathya.png", width=250)
         except:
