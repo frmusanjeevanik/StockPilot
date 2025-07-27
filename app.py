@@ -69,11 +69,11 @@ def show_login():
             st.markdown("### 🏢 ABCL")
     
     # Main login layout with Tathya logo on left and login form on right
-    col1, col2 = st.columns([1, 1])
+   col_logo, col_login, _ = st.columns([3, 2, 1])
     
     with col1:
         # Tathya logo section
-        st.markdown("<div style='margin-left: 40px;'text-align: Center; margin-top: 80px;'>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-left: 0px;'text-align: left; margin-top: 80px;'>", unsafe_allow_html=True)
         try:
             st.image("static/images/tathya.png", width=250)
         except:
