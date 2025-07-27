@@ -108,7 +108,7 @@ def show_sidebar(role):
     """Display sidebar navigation based on user role"""
     # User info first
     st.sidebar.markdown(f"### 👤 Welcome, {st.session_state.username}")
-    st.sidebar.markdown("""(f"**Role:** {role}")""")
+    st.sidebar.markdown(f"**Role:** {role}")
     st.sidebar.divider()
     
     # Navigation menu
