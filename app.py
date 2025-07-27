@@ -129,7 +129,8 @@ def show_sidebar(role):
     elif role == "Action Closure Authority":
         menu_items.append("🔒 Action Closure Panel")
     elif role == "Admin":
-        menu_items.extend(["Case Entry"])
+           menu_items.extend(["Case Entry", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Action Closure Panel", "Admin Panel"])
+
     
     # Initialize selected page
     if "selected_page" not in st.session_state:
