@@ -69,7 +69,7 @@ def show_login():
             st.markdown("### 🏢 ABCL")
     
     # Main login layout with Tathya logo on left and login form on right
-   col_logo, col_login, _ = st.columns([3, 2, 1])
+  col1, col2 = st.columns([1, 1])
     
     with col1:
         # Tathya logo section
