@@ -1,5 +1,5 @@
 import streamlit as st
-import ose
+import os
 import uuid
 import os  
 import json
@@ -15,7 +15,7 @@ import pages.reviewer_panel as reviewer_panel
 import pages.approver_panel as approver_panel
 import pages.legal_panel as legal_panel
 import pages.closure_panel as closure_panel
-import pages.admin_panel as admin_panel 
+import pages.admin_panel as admin_panel
 
 # Page configuration
 st.set_page_config(
