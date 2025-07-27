@@ -83,7 +83,7 @@ def show_login():
     
     with col2:
         # Login form section
-        st.markdown("<div style='margin-top: 80px;'>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-left: 40px;'margin-top: 80px;'>", unsafe_allow_html=True)
         with st.form("login_form"):
             st.markdown("### Please enter your credentials")
             username = st.text_input("Username", placeholder="Enter your username")
