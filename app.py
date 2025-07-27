@@ -75,7 +75,7 @@ def show_login():
         # Tathya logo section
         st.markdown("<div style='text-align: center; margin-top: 100px;'>", unsafe_allow_html=True)
         try:
-            st.image("static/images/tathya_logo.png", width=300)
+            st.image("static/images/tathya.png", width=300)
         except:
             st.markdown("# 🔎 Tathya")
             st.markdown("### Every Clue Counts")
