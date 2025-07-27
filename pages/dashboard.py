@@ -107,4 +107,3 @@ def show():
         st.dataframe(activity_data, use_container_width=True)
     else:
         st.info("No recent activity found")
-
