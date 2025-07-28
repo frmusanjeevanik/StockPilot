@@ -38,22 +38,65 @@ def show_case_management():
     st.subheader("📋 Case Management")
     
     # Get current user info
-    current_user = get_current_user() or {}
+    current_user = get_current_user()
+    if isinstance(current_user, str):
+        current_user = {"username": current_user, "name": current_user, "team": "Investigation", "referred_by": current_user}
+    elif current_user is None:
+        current_user = {"username": "Unknown", "name": "Unknown", "team": "Investigation", "referred_by": "Unknown"}
     
     # Two columns for case entry and case review
     col1, col2 = st.columns([1, 1])
     
     with col1:
         st.markdown("#### 📝 Quick Case Entry")
+        st.info("💡 **Auto-fill feature:** If you select an existing case ID, demographic details will auto-populate from the Case Entry system.")
+        
         with st.form("quick_case_entry"):
-            case_id = st.text_input("Case ID *")
-            lan = st.text_input("LAN *")
+            # Auto-fill functionality
+            col_a, col_b = st.columns([3, 1])
+            with col_a:
+                case_id = st.text_input("Case ID *", placeholder="Enter new or existing case ID")
+            with col_b:
+                st.markdown("<br>", unsafe_allow_html=True)
+                auto_fill = st.form_submit_button("🔄 Auto-fill")
+            
+            # Check for auto-fill data in session state
+            if "autofill_data" in st.session_state and st.session_state.autofill_case_id == case_id:
+                auto_data = st.session_state.autofill_data
+                lan = st.text_input("LAN *", value=auto_data.get("lan", ""))
+                customer_name = st.text_input("Customer Name", value=auto_data.get("customer_name", ""))
+                customer_mobile = st.text_input("Mobile Number", value=auto_data.get("customer_mobile", ""))
+                loan_amount = st.text_input("Loan Amount", value=str(auto_data.get("loan_amount", "")))
+                branch_location = st.text_input("Branch/Location", value=auto_data.get("branch_location", ""))
+                case_description = st.text_area("Case Description *", value=auto_data.get("case_description", ""), height=100)
+            else:
+                lan = st.text_input("LAN *")
+                customer_name = st.text_input("Customer Name")
+                customer_mobile = st.text_input("Mobile Number")
+                loan_amount = st.text_input("Loan Amount")
+                branch_location = st.text_input("Branch/Location")
+                case_description = st.text_area("Case Description *", height=100)
+            
             case_type = st.selectbox("Case Type *", ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"])
-            case_description = st.text_area("Case Description *", height=100)
+            
+            # Handle auto-fill functionality
+            if auto_fill and case_id:
+                with get_db_connection() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT * FROM cases WHERE case_id = ?", (case_id,))
+                    existing_case = cursor.fetchone()
+                    
+                    if existing_case:
+                        st.session_state.autofill_data = dict(existing_case)
+                        st.session_state.autofill_case_id = case_id
+                        st.success(f"✅ Found case {case_id}! Demographics auto-filled.")
+                        st.rerun()
+                    else:
+                        st.warning(f"⚠️ Case {case_id} not found in the system.")
             
             if st.form_submit_button("🚀 Create Case", use_container_width=True):
                 if case_id and lan and case_description:
-                    # Create basic case data
+                    # Create comprehensive case data with demographic details
                     case_data = {
                         "case_id": case_id,
                         "lan": lan,
@@ -62,29 +105,25 @@ def show_case_management():
                         "region": current_user.get("team", "Investigation"),
                         "referred_by": current_user.get("referred_by", current_user.get("name", "")),
                         "case_description": case_description,
-                        "case_date": datetime.now().date(),
-                        "status": "Under Investigation"
+                        "case_date": datetime.now().date().strftime("%Y-%m-%d"),
+                        "status": "Under Investigation",
+                        "case_source": "Investigation Panel",
+                        # Add demographic details if available
+                        "customer_name": customer_name,
+                        "customer_mobile": customer_mobile,
+                        "loan_amount": float(loan_amount) if loan_amount and loan_amount.replace('.', '').isdigit() else None,
+                        "branch_location": branch_location
                     }
                     
-                    # Create case
-                    with get_db_connection() as conn:
-                        cursor = conn.cursor()
-                        try:
-                            cursor.execute('''
-                                INSERT INTO cases (case_id, lan, case_type, product, region, referred_by, 
-                                                 case_description, case_date, created_by, status)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            ''', (
-                                case_data["case_id"], case_data["lan"], case_data["case_type"],
-                                case_data["product"], case_data["region"], case_data["referred_by"],
-                                case_data["case_description"], case_data["case_date"],
-                                current_user.get("username"), case_data["status"]
-                            ))
-                            conn.commit()
-                            log_audit(case_id, "Case Created for Investigation", f"Created by Investigator: {current_user.get('username')}", current_user.get("username"))
-                            st.success(f"✅ Case {case_id} created successfully!")
-                        except Exception as e:
-                            st.error(f"❌ Error creating case: {str(e)}")
+                    # Create case using the models function
+                    from models import create_case
+                    success, message = create_case(case_data, current_user.get("username", "Unknown"))
+                    
+                    if success:
+                        log_audit(case_id, "Case Created for Investigation", f"Created by Investigator: {current_user.get('username')}", current_user.get("username"))
+                        st.success(f"✅ Case {case_id} created successfully!")
+                    else:
+                        st.error(f"❌ Error creating case: {message}")
                 else:
                     st.error("❌ Please fill all required fields")
     
@@ -292,12 +331,12 @@ def show_investigation_analytics():
         # Verification results
         cursor.execute("""
             SELECT 
-                SUM(CASE WHEN pan_verification = 'Verified' THEN 1 ELSE 0 END) as pan_verified,
-                SUM(CASE WHEN pan_verification = 'Failed' THEN 1 ELSE 0 END) as pan_failed,
-                SUM(CASE WHEN aadhaar_verification = 'Verified' THEN 1 ELSE 0 END) as aadhaar_verified,
-                SUM(CASE WHEN aadhaar_verification = 'Failed' THEN 1 ELSE 0 END) as aadhaar_failed,
-                SUM(CASE WHEN employment_verification = 'Verified' THEN 1 ELSE 0 END) as employment_verified,
-                SUM(CASE WHEN employment_verification = 'Failed' THEN 1 ELSE 0 END) as employment_failed
+                SUM(CASE WHEN field_verification_status = 'Verified' THEN 1 ELSE 0 END) as field_verified,
+                SUM(CASE WHEN field_verification_status = 'Failed' THEN 1 ELSE 0 END) as field_failed,
+                SUM(CASE WHEN document_verification_status = 'Verified' THEN 1 ELSE 0 END) as document_verified,
+                SUM(CASE WHEN document_verification_status = 'Failed' THEN 1 ELSE 0 END) as document_failed,
+                SUM(CASE WHEN reference_verification_status = 'Verified' THEN 1 ELSE 0 END) as reference_verified,
+                SUM(CASE WHEN reference_verification_status = 'Failed' THEN 1 ELSE 0 END) as reference_failed
             FROM investigation_details
         """)
         verification_data = cursor.fetchone()
@@ -308,20 +347,23 @@ def show_investigation_analytics():
         with col1:
             st.markdown("#### Investigation Status Distribution")
             if status_data:
-                status_df = pd.DataFrame(status_data, columns=['Status', 'Count'])
+                # Convert to list of tuples and create DataFrame
+                data_list = [(row[0], row[1]) for row in status_data]
+                status_df = pd.DataFrame(data_list, columns=['Status', 'Count'])
                 st.bar_chart(status_df.set_index('Status'))
         
         with col2:
             st.markdown("#### Verification Success Rates")
             if verification_data:
                 metrics_data = {
-                    'PAN': [verification_data['pan_verified'], verification_data['pan_failed']],
-                    'Aadhaar': [verification_data['aadhaar_verified'], verification_data['aadhaar_failed']],
-                    'Employment': [verification_data['employment_verified'], verification_data['employment_failed']]
+                    'Field': [verification_data['field_verified'] or 0, verification_data['field_failed'] or 0],
+                    'Document': [verification_data['document_verified'] or 0, verification_data['document_failed'] or 0],
+                    'Reference': [verification_data['reference_verified'] or 0, verification_data['reference_failed'] or 0]
                 }
-                if any(metrics_data.values()):
-                    metrics_df = pd.DataFrame(metrics_data, index=['Verified', 'Failed'])
-                    st.bar_chart(metrics_df)
+                if any(sum(v) for v in metrics_data.values()):
+                    # Create DataFrame with proper structure
+                    metrics_df = pd.DataFrame.from_dict(metrics_data, orient='index', columns=['Verified', 'Failed'])
+                    st.bar_chart(metrics_df.T)
     else:
         st.info("📊 No investigation data available yet")
 

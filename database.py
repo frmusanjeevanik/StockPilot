@@ -138,6 +138,35 @@ def init_database():
             )
         ''')
         
+        # Investigation details table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS investigation_details (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                case_id TEXT NOT NULL,
+                investigation_type TEXT,
+                investigation_status TEXT DEFAULT 'In Progress',
+                field_verification_status TEXT DEFAULT 'Pending',
+                document_verification_status TEXT DEFAULT 'Pending',
+                reference_verification_status TEXT DEFAULT 'Pending',
+                technical_verification_status TEXT DEFAULT 'Pending',
+                investigation_findings TEXT,
+                risk_assessment TEXT,
+                fraud_indicators TEXT,
+                recommendations TEXT,
+                evidence_collected TEXT,
+                investigation_date DATE,
+                completed_date DATE,
+                investigator_name TEXT,
+                supervisor_name TEXT,
+                final_conclusion TEXT,
+                created_by TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (case_id) REFERENCES cases (case_id),
+                FOREIGN KEY (created_by) REFERENCES users (username)
+            )
+        ''')
+        
         conn.commit()
         
         # Add new columns to existing users table if they don't exist

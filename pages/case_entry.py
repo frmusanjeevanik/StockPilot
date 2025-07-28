@@ -197,6 +197,7 @@ def show():
                 "case_description": (case_description or "").strip(),
                 "case_date": case_date.strftime("%Y-%m-%d"),
                 "status": "Submitted" if submit_final else "Draft",
+                "case_source": "Case Entry Form",
                 # Demographics
                 "customer_name": customer_name.strip(),
                 "customer_dob": customer_dob.strftime("%Y-%m-%d"),
