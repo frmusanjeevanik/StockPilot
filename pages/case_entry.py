@@ -13,8 +13,10 @@ def query_gemini(prompt, max_tokens=1000):
     try:
         # Initialize Gemini client if not already done
         if not hasattr(st.session_state, 'gemini_client'):
-            os.environ['GEMINI_API_KEY'] = 'AIzaSyAZCvpTcGq-ie_3Vnh2obVaAzrFTnFnDqc'
-            st.session_state.gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+            # Set API key
+            api_key = 'AIzaSyAZCvpTcGq-ie_3Vnh2obVaAzrFTnFnDqc'
+            os.environ['GEMINI_API_KEY'] = api_key
+            st.session_state.gemini_client = genai.Client(api_key=api_key)
         
         client = st.session_state.gemini_client
         response = client.models.generate_content(
@@ -22,11 +24,23 @@ def query_gemini(prompt, max_tokens=1000):
             contents=prompt,
             config=types.GenerateContentConfig(
                 max_output_tokens=max_tokens,
-                temperature=0.3
+                temperature=0.3,
+                safety_settings={
+                    'HARM_CATEGORY_HARASSMENT': 'BLOCK_NONE',
+                    'HARM_CATEGORY_HATE_SPEECH': 'BLOCK_NONE',
+                    'HARM_CATEGORY_SEXUALLY_EXPLICIT': 'BLOCK_NONE',
+                    'HARM_CATEGORY_DANGEROUS_CONTENT': 'BLOCK_NONE'
+                }
             )
         )
-        return response.text if response.text else "Unable to generate response"
+        
+        if response and response.text:
+            return response.text
+        else:
+            return "Unable to generate response - empty response received"
+            
     except Exception as e:
+        st.error(f"Gemini API Error: {str(e)}")
         return f"Error generating response: {str(e)}"
 
 def show():
