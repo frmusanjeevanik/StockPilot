@@ -51,7 +51,28 @@ def show():
 
     
     with st.form("case_entry_form"):
-        st.subheader("Enter New Case Details")
+        # Apply light background styling to all form elements
+        st.markdown("""
+        <style>
+        .stTextArea > div > div > textarea {
+            background-color: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+        }
+        .stTextInput > div > div > input {
+            background-color: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+        }
+        .stSelectbox > div > div > div {
+            background-color: #f8f9fa !important;
+        }
+        .stNumberInput > div > div > input {
+            background-color: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        st.subheader("📝 Enter New Case Details")
         
         # Auto-generate Case ID
         if "auto_case_id" not in st.session_state:
@@ -128,22 +149,9 @@ def show():
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
         # Case description with AI enhancement
-        st.markdown("**Case Description ***")
+        st.subheader("📝 Case Description")
         
-        # Container for text area with positioned button
-        st.markdown("""
-        <style>
-        .enhance-container {
-            position: relative;
-        }
-        .enhance-button {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            z-index: 1000;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+
         
         # Text area with relative positioning for button overlay
         case_description = st.text_area(
@@ -175,7 +183,7 @@ def show():
             )
         
         # File upload
-        st.subheader("Supporting Documents")
+        st.subheader("📎 Supporting Documents")
         uploaded_files = st.file_uploader(
             "Upload supporting documents",
             accept_multiple_files=True,
