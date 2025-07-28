@@ -135,7 +135,6 @@ def show():
         
         # Case description with AI enhancement
         st.markdown("**Case Description ***")
-        st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
         
         # Container for text area with positioned button
         st.markdown("""
