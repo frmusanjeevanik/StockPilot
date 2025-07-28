@@ -7,7 +7,6 @@ from auth import get_current_user
 
 def show():
     """Display case entry page"""
-    st.title("📄 Case Entry")
     
     current_user = get_current_user()
     options = get_dropdown_options()

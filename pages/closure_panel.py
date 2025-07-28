@@ -6,7 +6,6 @@ from auth import get_current_user, require_role
 @require_role(["Action Closure Authority", "Admin"])
 def show():
     """Display action closure authority panel"""
-    st.title("🔒 Action Closure Panel")
     
     current_user = get_current_user()
     

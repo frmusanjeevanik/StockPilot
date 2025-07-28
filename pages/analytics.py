@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 
 def show():
     """Display analytics page"""
-    st.title("📈 Analytics & Reports")
     
     # Get options and statistics
     options = get_dropdown_options()

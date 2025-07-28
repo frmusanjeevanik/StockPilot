@@ -6,7 +6,6 @@ from auth import get_current_user, require_role
 @require_role(["Approver", "Admin"])
 def show():
     """Display approver panel"""
-    st.title("✅ Approver Panel")
     
     current_user = get_current_user()
     

@@ -9,7 +9,6 @@ from auth import require_role
 @require_role(["Admin"])
 def show():
     """Display admin panel"""
-    st.title("🛠️ Admin Panel")
     
     # Tabs for different admin functions
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
