@@ -148,8 +148,6 @@ def show():
         with col2:
             case_date = st.date_input("Case Date *", datetime.today())
         
-        status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
-        
         # Case description with AI enhancement
         st.subheader("📝 Case Description")
         
