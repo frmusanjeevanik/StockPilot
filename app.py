@@ -104,6 +104,10 @@ def show_login():
                     success, message = authenticate_user(username, password, selected_role)
                     if success:
                         st.success("✅ Login successful!")
+                        # Show AI tip popup after successful login
+                        if selected_role in ["Initiator", "Investigator", "Admin"]:
+                            st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
+                            st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
                         st.rerun()
                     else:
                         st.error(f"❌ {message}")
