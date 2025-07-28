@@ -137,7 +137,7 @@ def show():
         st.markdown("**Case Description ***")
         st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
         
-        col1, col2 = st.columns([5, 1])
+        col1, col2 = st.columns([4, 1])
         with col1:
             case_description = st.text_area(
                 "Case Description",
@@ -147,12 +147,8 @@ def show():
                 label_visibility="collapsed"
             )
         with col2:
-            st.markdown("<br><br>", unsafe_allow_html=True)
-            enhance_desc = st.form_submit_button(
-                "✨ Enhance", 
-                help="Use AI to improve case description",
-                use_container_width=False
-            )
+            st.markdown("<br>", unsafe_allow_html=True)
+            enhance_desc = st.form_submit_button("✨ Enhance Description", help="Use AI to improve case description")
         
         # Show enhanced description if available
         if "enhanced_case_description" in st.session_state:
