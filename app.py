@@ -41,6 +41,11 @@ def main():
         show_login()
         return
     
+    # Show AI tip popup after login (only once per session)
+    if st.session_state.get("show_ai_tip", False):
+        st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
+        st.session_state.show_ai_tip = False  # Clear flag so it only shows once
+    
     # Header with ABCL logo for authenticated users
     col1, col2, col3 = st.columns([1, 2, 1])
     with col3:
@@ -104,10 +109,9 @@ def show_login():
                     success, message = authenticate_user(username, password, selected_role)
                     if success:
                         st.success("✅ Login successful!")
-                        # Show AI tip popup after successful login
+                        # Set flag to show AI tip popup after login
                         if selected_role in ["Initiator", "Investigator", "Admin"]:
-                            st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
-                            st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
+                            st.session_state.show_ai_tip = True
                         st.rerun()
                     else:
                         st.error(f"❌ {message}")
