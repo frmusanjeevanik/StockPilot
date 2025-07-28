@@ -8,15 +8,7 @@ Tathya is a comprehensive case management system built with Streamlit for handli
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (July 28, 2025)
-- Successfully migrated project from Replit Agent to Replit environment
-- Created proper Streamlit configuration for deployment (.streamlit/config.toml)
-- Removed page headers from main content areas while preserving navigation titles
-- Fixed all package dependencies and workflow configuration
-- Ensured security best practices and proper server/client separation
-- Updated project structure for Replit compatibility
-
-## Previous Changes (July 26, 2025)
+## Recent Changes (July 26, 2025)
 - Fixed plotly visualization errors in analytics dashboard
 - Updated login page layout with proper logo placement (Tathya left, login form right, ABCL top-right)
 - Reorganized sidebar navigation (Navigation section appears first, then user welcome)

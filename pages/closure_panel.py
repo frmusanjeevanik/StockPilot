@@ -6,6 +6,7 @@ from auth import get_current_user, require_role
 @require_role(["Action Closure Authority", "Admin"])
 def show():
     """Display action closure authority panel"""
+    st.title("🔒 Action Closure Panel")
     
     current_user = get_current_user()
     
@@ -132,10 +133,6 @@ def show_closure_case_details(case, current_user):
             "Follow-up Required",
             key=f"followup_{case['case_id']}"
         )
-    
-    # Initialize follow-up variables
-    follow_up_date = None
-    follow_up_notes = ""
     
     if follow_up_required:
         follow_up_date = st.date_input(

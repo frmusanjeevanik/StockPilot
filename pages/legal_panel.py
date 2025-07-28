@@ -6,6 +6,7 @@ from auth import get_current_user, require_role
 @require_role(["Legal Reviewer", "Admin"])
 def show():
     """Display legal reviewer panel"""
+    st.title("⚖️ Legal Review Panel")
     
     current_user = get_current_user()
     

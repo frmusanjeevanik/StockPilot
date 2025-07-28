@@ -1,7 +1,6 @@
 import streamlit as st
 import sqlite3
 import hashlib
-import plotly.express as px
 from database import get_db_connection, get_password_hash
 from models import get_audit_logs, get_case_statistics
 from utils import format_datetime
@@ -10,6 +9,7 @@ from auth import require_role
 @require_role(["Admin"])
 def show():
     """Display admin panel"""
+    st.title("🛠️ Admin Panel")
     
     # Tabs for different admin functions
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -145,6 +145,7 @@ def show_system_statistics():
     with col1:
         st.subheader("Cases by Status")
         if stats["by_status"]:
+            import plotly.express as px
             fig = px.bar(
                 x=list(stats["by_status"].keys()),
                 y=list(stats["by_status"].values()),

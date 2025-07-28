@@ -7,6 +7,7 @@ from auth import get_current_user_role
 
 def show():
     """Display dashboard page"""
+    st.title("📊 Dashboard")
     
     # Get statistics
     stats = get_case_statistics()
