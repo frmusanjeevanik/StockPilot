@@ -152,7 +152,7 @@ def show():
                 "Rank": f"{rank_icon} {i}",
                 "User": user["name"] or user["username"],
                 "Score": user["score"],
-                "Team": user.get("team", "N/A")
+                "Team": user["team"] if user["team"] else "N/A"
             })
         
         st.dataframe(leaderboard_df, use_container_width=True, hide_index=True)
