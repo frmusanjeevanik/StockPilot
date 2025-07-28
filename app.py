@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 print("Current working directory:", os.getcwd())  # 👈 Add this line here
 from database import init_database
-from auth import authenticate_user, logout_user, is_authenticated
+from auth import authenticate_user, logout_user, is_authenticated, check_session_timeout, update_last_activity, get_remaining_session_time
 from models import get_user_role
 import pages.dashboard as dashboard
 import pages.case_entry as case_entry
@@ -106,12 +106,16 @@ def show_login():
 
 def show_sidebar(role):
     """Display sidebar navigation based on user role"""
-    # User info first
-    st.sidebar.markdown(f"### 👤 Welcome, {st.session_state.username}")
-    st.sidebar.markdown(f"**Role:** {role}")
-    st.sidebar.divider()
+    # Check session timeout
+    if check_session_timeout():
+        st.sidebar.error("⏰ Session expired due to inactivity")
+        logout_user()
+        st.rerun()
     
-    # Navigation menu
+    # Update last activity
+    update_last_activity()
+    
+    # Navigation menu (moved to top)
     st.sidebar.markdown("### 📁 Navigation")
     
     # Base menu items - only Dashboard for all users
@@ -147,6 +151,18 @@ def show_sidebar(role):
             st.rerun()
     
     st.sidebar.divider()
+    
+    # User info moved to bottom
+    st.sidebar.markdown("### 👤 User Information")
+    st.sidebar.markdown(f"**User:** {st.session_state.username}")
+    st.sidebar.markdown(f"**Role:** {role}")
+    
+    # Session timeout indicator
+    remaining_time = get_remaining_session_time()
+    if remaining_time > 0:
+        st.sidebar.markdown(f"**Session:** {remaining_time} min remaining")
+    else:
+        st.sidebar.markdown("**Session:** Expired")
     
     # Logout button
     if st.sidebar.button("🚪 Logout", use_container_width=True):

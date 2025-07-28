@@ -1,5 +1,6 @@
 import streamlit as st
 import hashlib
+from datetime import datetime, timedelta
 from models import get_user_by_username
 from database import get_password_hash
 
@@ -12,6 +13,8 @@ def authenticate_user(username, password):
             st.session_state.authenticated = True
             st.session_state.username = username
             st.session_state.user_role = user["role"]
+            st.session_state.login_time = datetime.now()
+            st.session_state.last_activity = datetime.now()
             return True
     return False
 
@@ -53,3 +56,32 @@ def get_current_user_role():
     if is_authenticated():
         return st.session_state.get("user_role")
     return None
+
+def update_last_activity():
+    """Update last activity timestamp"""
+    if is_authenticated():
+        st.session_state.last_activity = datetime.now()
+
+def check_session_timeout():
+    """Check if session has timed out (15 minutes)"""
+    if not is_authenticated():
+        return False
+    
+    last_activity = st.session_state.get("last_activity")
+    if last_activity:
+        if datetime.now() - last_activity > timedelta(minutes=15):
+            return True
+    return False
+
+def get_remaining_session_time():
+    """Get remaining session time in minutes"""
+    if not is_authenticated():
+        return 0
+    
+    last_activity = st.session_state.get("last_activity")
+    if last_activity:
+        elapsed = datetime.now() - last_activity
+        remaining = timedelta(minutes=15) - elapsed
+        if remaining.total_seconds() > 0:
+            return int(remaining.total_seconds() / 60)
+    return 0

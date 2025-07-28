@@ -63,6 +63,29 @@ def init_database():
                 closed_by TEXT,
                 closed_at TIMESTAMP,
                 closure_reason TEXT,
+                -- SLA tracking
+                fmr1_due_date DATE,
+                fmr1_submitted_date DATE,
+                fmr3_due_date DATE,
+                fmr3_submitted_date DATE,
+                document_retention_date DATE,
+                sla_status TEXT DEFAULT 'On Track',
+                -- Demographics
+                customer_name TEXT,
+                customer_dob DATE,
+                customer_pan TEXT,
+                customer_address TEXT,
+                customer_mobile TEXT,
+                customer_email TEXT,
+                branch_location TEXT,
+                loan_amount DECIMAL(15,2),
+                disbursement_date DATE,
+                repayment_status TEXT,
+                linked_loan_accounts TEXT,
+                customer_type TEXT DEFAULT 'Individual',
+                kyc_status TEXT DEFAULT 'Pending',
+                risk_category TEXT,
+                case_source TEXT,
                 FOREIGN KEY (created_by) REFERENCES users (username)
             )
         ''')

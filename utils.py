@@ -115,5 +115,10 @@ def get_dropdown_options():
             "Operation Risk Management", "Operation Unit", "Other Function", "Policy Team",
             "Risk Containment Unit", "Sales Unit", "Technical Team"
         ],
-        "statuses": ["Draft", "Submitted", "Under Review", "Approved", "Rejected", "Legal Review", "Closed"]
+        "statuses": ["Draft", "Submitted", "Under Review", "Approved", "Rejected", "Legal Review", "Closed"],
+        "customer_types": ["Individual", "Entity"],
+        "kyc_status": ["Complete", "Incomplete", "Pending"],
+        "risk_categories": ["Low", "Medium", "High"],
+        "case_sources": ["Customer Complaint", "Internal Trigger", "Third-party Input"],
+        "repayment_status": ["Regular", "Overdue", "NPA", "Closed", "Settled"]
     }
