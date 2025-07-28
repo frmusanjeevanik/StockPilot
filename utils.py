@@ -64,19 +64,25 @@ def validate_case_data(case_data):
     errors = []
     
     # Required fields validation
-    required_fields = ["case_id", "lan", "customer_name", "customer_mobile", "case_description"]
+    required_fields = [
+        "case_id", "lan", "customer_name", "customer_mobile", 
+        "customer_email", "customer_pan", "branch_location", 
+        "case_description"
+    ]
     for field in required_fields:
         if not case_data.get(field) or str(case_data.get(field)).strip() == "":
             errors.append(f"{field.replace('_', ' ').title()} is required")
     
-    # PAN validation (10 characters alphanumeric)
-    if case_data.get("customer_pan") and len(str(case_data["customer_pan"]).strip()) != 10:
-        errors.append("PAN must be exactly 10 characters")
+    # PAN validation (10 characters alphanumeric) - only if PAN is provided
+    if case_data.get("customer_pan"):
+        pan = str(case_data["customer_pan"]).strip()
+        if pan and len(pan) != 10:
+            errors.append("PAN must be exactly 10 characters")
     
-    # Mobile validation (10 digits)
+    # Mobile validation (10 digits) - only if mobile is provided
     if case_data.get("customer_mobile"):
         mobile = str(case_data["customer_mobile"]).strip()
-        if not mobile.isdigit() or len(mobile) != 10:
+        if mobile and (not mobile.isdigit() or len(mobile) != 10):
             errors.append("Mobile number must be exactly 10 digits")
     
     # Email validation
@@ -88,8 +94,10 @@ def validate_case_data(case_data):
             if not re.match(email_pattern, email):
                 errors.append("Please enter a valid email address")
     
-    # Loan amount validation
-    if case_data.get("loan_amount"):
+    # Loan amount validation - required field
+    if not case_data.get("loan_amount") or case_data.get("loan_amount") == 0:
+        errors.append("Loan amount is required")
+    else:
         try:
             amount = float(case_data["loan_amount"])
             if amount <= 0:

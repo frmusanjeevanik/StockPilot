@@ -24,10 +24,13 @@ def create_case(case_data, created_by):
         if cursor.fetchone()[0] > 0:
             return False, "Case ID already exists"
         
+        # Handle case data with demographics
         cursor.execute('''
             INSERT INTO cases (case_id, lan, case_type, product, region, referred_by, 
-                             case_description, case_date, created_by, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             case_description, case_date, created_by, status,
+                             customer_name, customer_dob, customer_pan, customer_mobile,
+                             customer_email, branch_location, loan_amount, disbursement_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             case_data["case_id"],
             case_data["lan"],
@@ -38,7 +41,15 @@ def create_case(case_data, created_by):
             case_data["case_description"],
             case_data["case_date"],
             created_by,
-            case_data.get("status", "Draft")
+            case_data.get("status", "Draft"),
+            case_data.get("customer_name", ""),
+            case_data.get("customer_dob", ""),
+            case_data.get("customer_pan", ""),
+            case_data.get("customer_mobile", ""),
+            case_data.get("customer_email", ""),
+            case_data.get("branch_location", ""),
+            case_data.get("loan_amount", 0),
+            case_data.get("disbursement_date", "")
         ))
         
         conn.commit()
