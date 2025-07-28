@@ -52,78 +52,179 @@ def show_case_management():
         st.info("💡 **Auto-fill feature:** If you select an existing case ID, demographic details will auto-populate from the Case Entry system.")
         
         with st.form("quick_case_entry"):
-            # Auto-fill functionality
+            # Case ID input with auto-fetch functionality
             col_a, col_b = st.columns([3, 1])
             with col_a:
-                case_id = st.text_input("Case ID *", placeholder="Enter new or existing case ID")
+                case_id = st.text_input("Case ID *", placeholder="Enter case ID to auto-fetch details")
             with col_b:
                 st.markdown("<br>", unsafe_allow_html=True)
-                auto_fill = st.form_submit_button("🔄 Auto-fill")
+                auto_fill = st.form_submit_button("🔍 Fetch Details")
             
-            # Check for auto-fill data in session state
-            if "autofill_data" in st.session_state and st.session_state.autofill_case_id == case_id:
+            # Initialize default values
+            default_values = {
+                "lan": "",
+                "customer_name": "",
+                "customer_mobile": "",
+                "customer_email": "",
+                "customer_pan": "",
+                "loan_amount": "",
+                "branch_location": "",
+                "case_description": "",
+                "case_type": "",
+                "product": "",
+                "region": "",
+                "referred_by": "",
+                "case_date": "",
+                "disbursement_date": "",
+                "customer_dob": ""
+            }
+            
+            # Check for auto-fill data or handle auto-fill button click
+            if auto_fill and case_id.strip():
+                # Fetch case details from database
+                case_data = get_case_by_id(case_id.strip())
+                if case_data:
+                    st.success(f"✅ Case details fetched for {case_id}")
+                    default_values.update({
+                        "lan": case_data.get("lan", ""),
+                        "customer_name": case_data.get("customer_name", ""),
+                        "customer_mobile": case_data.get("customer_mobile", ""),
+                        "customer_email": case_data.get("customer_email", ""),
+                        "customer_pan": case_data.get("customer_pan", ""),
+                        "loan_amount": str(case_data.get("loan_amount", "")),
+                        "branch_location": case_data.get("branch_location", ""),
+                        "case_description": case_data.get("case_description", ""),
+                        "case_type": case_data.get("case_type", ""),
+                        "product": case_data.get("product", ""),
+                        "region": case_data.get("region", ""),
+                        "referred_by": case_data.get("referred_by", ""),
+                        "case_date": case_data.get("case_date", ""),
+                        "disbursement_date": case_data.get("disbursement_date", ""),
+                        "customer_dob": case_data.get("customer_dob", "")
+                    })
+                else:
+                    st.warning(f"⚠️ Case ID '{case_id}' not found in system")
+            elif "autofill_data" in st.session_state and st.session_state.autofill_case_id == case_id:
+                # Use existing session data
                 auto_data = st.session_state.autofill_data
-                lan = st.text_input("LAN *", value=auto_data.get("lan", ""))
-                customer_name = st.text_input("Customer Name", value=auto_data.get("customer_name", ""))
-                customer_mobile = st.text_input("Mobile Number", value=auto_data.get("customer_mobile", ""))
-                loan_amount = st.text_input("Loan Amount", value=str(auto_data.get("loan_amount", "")))
-                branch_location = st.text_input("Branch/Location", value=auto_data.get("branch_location", ""))
-                case_description = st.text_area("Case Description *", value=auto_data.get("case_description", ""), height=100)
-            else:
-                lan = st.text_input("LAN *")
-                customer_name = st.text_input("Customer Name")
-                customer_mobile = st.text_input("Mobile Number")
-                loan_amount = st.text_input("Loan Amount")
-                branch_location = st.text_input("Branch/Location")
-                case_description = st.text_area("Case Description *", height=100)
+                default_values.update(auto_data)
             
-            case_type = st.selectbox("Case Type *", ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"])
+            # Display all fetched/auto-filled fields
+            st.markdown("#### 📋 Case Details")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                lan = st.text_input("LAN *", value=default_values["lan"])
+                case_type = st.text_input("Case Type", value=default_values["case_type"])
+            with col2:
+                product = st.text_input("Product", value=default_values["product"])
+                region = st.text_input("Region", value=default_values["region"])
+            with col3:
+                referred_by = st.text_input("Referred By", value=default_values["referred_by"])
+                case_date = st.text_input("Case Date", value=default_values["case_date"])
             
-            # Handle auto-fill functionality
-            if auto_fill and case_id:
-                with get_db_connection() as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT * FROM cases WHERE case_id = ?", (case_id,))
-                    existing_case = cursor.fetchone()
-                    
-                    if existing_case:
-                        st.session_state.autofill_data = dict(existing_case)
-                        st.session_state.autofill_case_id = case_id
-                        st.success(f"✅ Found case {case_id}! Demographics auto-filled.")
-                        st.rerun()
+            st.markdown("#### 👤 Customer Demographics")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                customer_name = st.text_input("Customer Name *", value=default_values["customer_name"])
+                customer_pan = st.text_input("PAN", value=default_values["customer_pan"])
+            with col2:
+                customer_mobile = st.text_input("Mobile Number *", value=default_values["customer_mobile"])
+                customer_dob = st.text_input("Date of Birth", value=default_values["customer_dob"])
+            with col3:
+                customer_email = st.text_input("Email ID", value=default_values["customer_email"])
+            
+            st.markdown("#### 🏦 Loan Details")
+            col1, col2 = st.columns(2)
+            with col1:
+                loan_amount = st.text_input("Loan Amount", value=default_values["loan_amount"])
+            with col2:
+                branch_location = st.text_input("Branch/Location", value=default_values["branch_location"])
+                disbursement_date = st.text_input("Disbursement Date", value=default_values["disbursement_date"])
+            
+            case_description = st.text_area("Case Description *", value=default_values["case_description"], height=100)
+            
+            case_type = st.selectbox("Case Type *", ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"], 
+                                   index=0 if not default_values["case_type"] else ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"].index(default_values["case_type"]) if default_values["case_type"] in ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"] else 0)
+            
+            st.markdown("---")
+            col_submit1, col_submit2 = st.columns(2)
+            
+            with col_submit1:
+                if st.form_submit_button("💾 Save as Draft", use_container_width=True):
+                    if case_id and lan and case_description:
+                        # Create comprehensive case data with all demographic details
+                        case_data = {
+                            "case_id": case_id,
+                            "lan": lan,
+                            "case_type": case_type,
+                            "product": product or "Investigation",
+                            "region": region or current_user.get("team", "Investigation"),
+                            "referred_by": referred_by or current_user.get("referred_by", current_user.get("name", "")),
+                            "case_description": case_description,
+                            "case_date": case_date or datetime.now().date().strftime("%Y-%m-%d"),
+                            "status": "Draft",
+                            "case_source": "Investigation Panel",
+                            # Add all demographic details
+                            "customer_name": customer_name,
+                            "customer_mobile": customer_mobile,
+                            "customer_email": customer_email,
+                            "customer_pan": customer_pan,
+                            "customer_dob": customer_dob,
+                            "loan_amount": float(loan_amount) if loan_amount and str(loan_amount).replace('.', '').replace('-', '').isdigit() else None,
+                            "branch_location": branch_location,
+                            "disbursement_date": disbursement_date
+                        }
+                        
+                        # Create case using the models function
+                        from models import create_case
+                        success, message = create_case(case_data, current_user.get("username", "Unknown"))
+                        
+                        if success:
+                            log_audit(case_id, "Case Saved as Draft", f"Created by Investigator: {current_user.get('username')}", current_user.get("username"))
+                            st.success(f"✅ Case {case_id} saved as draft!")
+                        else:
+                            st.error(f"❌ Error saving case: {message}")
                     else:
-                        st.warning(f"⚠️ Case {case_id} not found in the system.")
+                        st.error("❌ Please fill all required fields (Case ID, LAN, Customer Name, Mobile, Description)")
             
-            if st.form_submit_button("🚀 Create Case", use_container_width=True):
-                if case_id and lan and case_description:
-                    # Create comprehensive case data with demographic details
-                    case_data = {
-                        "case_id": case_id,
-                        "lan": lan,
-                        "case_type": case_type,
-                        "product": "Investigation",
-                        "region": current_user.get("team", "Investigation"),
-                        "referred_by": current_user.get("referred_by", current_user.get("name", "")),
-                        "case_description": case_description,
-                        "case_date": datetime.now().date().strftime("%Y-%m-%d"),
-                        "status": "Under Investigation",
-                        "case_source": "Investigation Panel",
-                        # Add demographic details if available
-                        "customer_name": customer_name,
-                        "customer_mobile": customer_mobile,
-                        "loan_amount": float(loan_amount) if loan_amount and loan_amount.replace('.', '').isdigit() else None,
-                        "branch_location": branch_location
-                    }
-                    
-                    # Create case using the models function
-                    from models import create_case
-                    success, message = create_case(case_data, current_user.get("username", "Unknown"))
-                    
-                    if success:
-                        log_audit(case_id, "Case Created for Investigation", f"Created by Investigator: {current_user.get('username')}", current_user.get("username"))
-                        st.success(f"✅ Case {case_id} created successfully!")
+            with col_submit2:
+                if st.form_submit_button("🚀 Submit for Review", use_container_width=True):
+                    if case_id and lan and customer_name and customer_mobile and case_description:
+                        # Create comprehensive case data with all demographic details
+                        case_data = {
+                            "case_id": case_id,
+                            "lan": lan,
+                            "case_type": case_type,
+                            "product": product or "Investigation",
+                            "region": region or current_user.get("team", "Investigation"),
+                            "referred_by": referred_by or current_user.get("referred_by", current_user.get("name", "")),
+                            "case_description": case_description,
+                            "case_date": case_date or datetime.now().date().strftime("%Y-%m-%d"),
+                            "status": "Submitted",
+                            "case_source": "Investigation Panel",
+                            # Add all demographic details for reviewer workflow
+                            "customer_name": customer_name,
+                            "customer_mobile": customer_mobile,
+                            "customer_email": customer_email,
+                            "customer_pan": customer_pan,
+                            "customer_dob": customer_dob,
+                            "loan_amount": float(loan_amount) if loan_amount and str(loan_amount).replace('.', '').replace('-', '').isdigit() else None,
+                            "branch_location": branch_location,
+                            "disbursement_date": disbursement_date
+                        }
+                        
+                        # Create case using the models function
+                        from models import create_case
+                        success, message = create_case(case_data, current_user.get("username", "Unknown"))
+                        
+                        if success:
+                            log_audit(case_id, "Case Submitted for Review", f"Submitted by Investigator: {current_user.get('username')} with complete demographics", current_user.get("username"))
+                            st.success(f"✅ Case {case_id} submitted for review with complete customer details!")
+                            st.info("📋 Case is now available in the reviewer workflow with all demographic information.")
+                        else:
+                            st.error(f"❌ Error submitting case: {message}")
                     else:
-                        st.error(f"❌ Error creating case: {message}")
+                        st.error("❌ Please fill all required fields (Case ID, LAN, Customer Name, Mobile, Description)")
                 else:
                     st.error("❌ Please fill all required fields")
     
@@ -291,26 +392,86 @@ def show_investigation_details():
                 
                 # Insert or update investigation details
                 cursor.execute('''
-                    INSERT OR REPLACE INTO investigation_details 
-                    (case_id, pan_verification, aadhaar_verification, bank_statement_verification,
-                     address_verification, employment_verification, mobile_verification,
-                     cibil_review, form26as_review, modus_operandi, root_cause_analysis,
-                     business_action, rcu_action, orm_action, compliance_action,
-                     it_action, legal_action, investigation_status, investigation_comments,
-                     investigated_by, investigation_date)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', tuple(investigation_data.values()))
-                
-                # Update case status
-                new_status = "Investigation Completed" if investigation_status == "Completed" else "Under Investigation"
-                cursor.execute("UPDATE cases SET status = ? WHERE case_id = ?", (new_status, selected_case))
+                    INSERT OR REPLACE INTO investigation_details (
+                        case_id, pan_verification, aadhaar_verification, bank_statement_verification,
+                        address_verification, employment_verification, mobile_verification, 
+                        cibil_review, form26as_review, modus_operandi, root_cause_analysis,
+                        business_action, rcu_action, orm_action, compliance_action, 
+                        it_action, legal_action, investigation_status, investigation_comments,
+                        investigated_by, investigation_date
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    investigation_data['case_id'],
+                    investigation_data['pan_verification'],
+                    investigation_data['aadhaar_verification'],
+                    investigation_data['bank_statement_verification'],
+                    investigation_data['address_verification'],
+                    investigation_data['employment_verification'],
+                    investigation_data['mobile_verification'],
+                    investigation_data['cibil_review'],
+                    investigation_data['form26as_review'],
+                    investigation_data['modus_operandi'],
+                    investigation_data['root_cause_analysis'],
+                    investigation_data['business_action'],
+                    investigation_data['rcu_action'],
+                    investigation_data['orm_action'],
+                    investigation_data['compliance_action'],
+                    investigation_data['it_action'],
+                    investigation_data['legal_action'],
+                    investigation_data['investigation_status'],
+                    investigation_data['investigation_comments'],
+                    investigation_data['investigated_by'],
+                    investigation_data['investigation_date']
+                ))
                 
                 conn.commit()
                 
-                # Log audit
-                log_audit(selected_case, "Investigation Updated", f"Investigation details updated by {current_user.get('username')}", current_user.get('username'))
+                # Add investigation comment to case comments for reviewer workflow
+                from models import add_case_comment
+                investigation_summary = f"""Investigation Summary:
+                
+**Document Verification:**
+- PAN: {pan_verification}
+- Aadhaar: {aadhaar_verification}  
+- Bank Statement: {bank_statement_verification}
+- Address: {address_verification}
+
+**Contact & Employment:**
+- Employment: {employment_verification}
+- Mobile: {mobile_verification}
+- CIBIL: {cibil_review}
+- Form 26AS: {form26as_review}
+
+**Analysis:**
+- Modus Operandi: {modus_operandi[:100]}{'...' if len(modus_operandi) > 100 else ''}
+- Root Cause: {root_cause_analysis[:100]}{'...' if len(root_cause_analysis) > 100 else ''}
+
+**Status:** {investigation_status}
+**Comments:** {investigation_comments[:100]}{'...' if len(investigation_comments) > 100 else ''}
+                """
+                
+                add_case_comment(
+                    selected_case, 
+                    investigation_summary, 
+                    "Investigation Report", 
+                    current_user.get('username', 'Investigator')
+                )
+                
+                # Update case status based on investigation status
+                if investigation_status == "Completed":
+                    update_case_status(selected_case, "Under Review", current_user, "Investigation completed - ready for review")
+                elif investigation_status == "Escalated":
+                    update_case_status(selected_case, "Escalated", current_user, "Investigation escalated")
                 
                 st.success("✅ Investigation details saved successfully!")
+                st.info("📋 Investigation findings have been added to case comments for reviewer workflow.")
+                
+                log_audit(
+                    selected_case, 
+                    "Investigation Details Saved", 
+                    f"Investigation completed by {current_user.get('username')} - Status: {investigation_status}", 
+                    current_user.get('username')
+                )
 
 def show_investigation_analytics():
     """Show investigation analytics and metrics"""

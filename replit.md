@@ -99,6 +99,15 @@ Preferred communication style: Simple, everyday language.
   - Updated UI with concise instruction: "Tip: Type your case summary. Click 'Enhance Description' to improve it using AI."
   - Compact "✨ Enhance" button positioned in bottom-right corner with proper styling
   - Post-login AI tip popup appears for Initiator, Investigator, and Admin roles (session-based, shows once per login)
+- Enhanced Investigation Panel with Comprehensive Case Auto-Fetch:
+  - Implemented auto-fetch functionality: Enter Case ID and click "🔍 Fetch Details" to populate all fields
+  - Auto-populates: LAN, Customer Name, Mobile Number, Email, PAN, Date of Birth, Loan Amount, Branch/Location, Case Description, Case Type, Product, Region, Referred By, Case Date, Disbursement Date
+  - Comprehensive investigation details form with document verification tracking
+  - Save investigation findings to database with complete reviewer workflow integration
+  - Investigation data automatically added to case comments for reviewer access
+  - Auto-updates case status based on investigation completion (Draft → Submitted → Under Review)
+  - Complete demographic data flow from Investigation Panel to reviewer workflow
+  - Professional investigation tracking with audit trail and status management
 
 ## System Architecture
 
