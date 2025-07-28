@@ -163,15 +163,26 @@ def show():
         )
         
         # Small enhance button positioned at bottom-right  
-        col1, col2 = st.columns([5, 1])
+        col1, col2 = st.columns([7, 1])
         with col2:
-            st.markdown("<div style='text-align: right; margin-top: -25px;'>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='text-align: right; margin-top: -35px;'>
+            <style>
+            div[data-testid="stForm"] button[kind="formSubmit"] {
+                height: 32px !important;
+                min-height: 32px !important;
+                padding: 4px 8px !important;
+                font-size: 12px !important;
+                border-radius: 4px !important;
+                width: auto !important;
+            }
+            </style>
+            </div>
+            """, unsafe_allow_html=True)
             enhance_desc = st.form_submit_button(
                 "✨ Enhance", 
-                help="Use AI to improve case description",
-                use_container_width=False
+                help="Use AI to improve case description"
             )
-            st.markdown("</div>", unsafe_allow_html=True)
         
         # Show enhanced description if available
         if "enhanced_case_description" in st.session_state:
