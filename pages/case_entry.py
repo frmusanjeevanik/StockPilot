@@ -78,14 +78,7 @@ def show():
         if "auto_case_id" not in st.session_state:
             st.session_state.auto_case_id = generate_case_id()
         
-        col_id1, col_id2 = st.columns([3, 1])
-        with col_id1:
-            case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID in format: CASE20250728CE806A")
-        with col_id2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.form_submit_button("🔄 Generate New ID"):
-                st.session_state.auto_case_id = generate_case_id()
-                st.rerun()
+        case_id = st.text_input("Case ID", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID in format: CASE20250728CE806A")
         
         # Auto-fill "Referred By" based on current user's information
         current_user_id = get_current_user()

@@ -146,6 +146,7 @@ def show():
         for case in stats["recent_cases"]:
             cases_data.append({
                 "Case ID": case["case_id"],
+                "LAN": case["lan"] or "N/A",
                 "Status": f"{get_status_color(case['status'])} {case['status']}",
                 "Product": case["product"],
                 "Region": case["region"],
@@ -160,13 +161,44 @@ def show():
     # Role-specific sections
     if user_role in ["Reviewer", "Admin"]:
         st.subheader("🔍 Cases Requiring Review")
-        # This would show cases that need review
-        st.info("Cases pending review will appear here")
+        # Get cases that need review (Submitted status)
+        from models import get_cases_by_status
+        review_cases = get_cases_by_status("Submitted")
+        
+        if review_cases:
+            review_data = []
+            for case in review_cases:
+                review_data.append({
+                    "Case ID": case["case_id"],
+                    "LAN": case["lan"] or "N/A",
+                    "Case Type": case["case_type"],
+                    "Product": case["product"],
+                    "Region": case["region"],
+                    "Submitted": format_datetime(case["created_at"])
+                })
+            st.dataframe(review_data, use_container_width=True)
+        else:
+            st.info("📭 No cases pending review")
     
     if user_role in ["Approver", "Admin"]:
         st.subheader("✅ Cases Requiring Approval")
-        # This would show cases that need approval
-        st.info("Cases pending approval will appear here")
+        # Get cases that need approval (Approved by reviewer status)
+        approval_cases = get_cases_by_status("Approved")
+        
+        if approval_cases:
+            approval_data = []
+            for case in approval_cases:
+                approval_data.append({
+                    "Case ID": case["case_id"],
+                    "LAN": case["lan"] or "N/A",
+                    "Case Type": case["case_type"],
+                    "Product": case["product"],
+                    "Region": case["region"],
+                    "Reviewed": format_datetime(case["updated_at"])
+                })
+            st.dataframe(approval_data, use_container_width=True)
+        else:
+            st.info("📭 No cases pending approval")
     
     # Recent activity
     st.subheader("Recent Activity")

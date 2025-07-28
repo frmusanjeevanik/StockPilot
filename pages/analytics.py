@@ -43,7 +43,7 @@ def show():
         filters["date_to"] = date_to.strftime("%Y-%m-%d")
     
     # Search cases with filters
-    filtered_cases = search_cases("", filters) if filters else []
+    filtered_cases = search_cases("", filters) if filters else None
     
     st.divider()
     
@@ -158,14 +158,18 @@ def show():
     
     with col2:
         if st.button("📊 Export to CSV", use_container_width=True):
-            cases_to_export = filtered_cases if filtered_cases else search_cases("")
+            cases_to_export = filtered_cases if filtered_cases else search_cases("", {})
             if cases_to_export:
-                file_path, message = export_cases_to_csv(cases_to_export)
-                if file_path:
-                    st.success(f"✅ {message}")
-                    st.info(f"File saved: {file_path}")
+                csv_data = export_cases_to_csv(cases_to_export)
+                if csv_data:
+                    st.download_button(
+                        label="📥 Download CSV",
+                        data=csv_data,
+                        file_name=f"cases_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        mime="text/csv"
+                    )
                 else:
-                    st.error(f"❌ {message}")
+                    st.error("❌ Error generating CSV")
             else:
                 st.warning("No cases to export")
     

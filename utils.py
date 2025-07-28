@@ -66,30 +66,39 @@ def validate_case_data(case_data):
     # Required fields validation
     required_fields = ["case_id", "lan", "customer_name", "customer_mobile", "case_description"]
     for field in required_fields:
-        if not case_data.get(field):
+        if not case_data.get(field) or str(case_data.get(field)).strip() == "":
             errors.append(f"{field.replace('_', ' ').title()} is required")
     
     # PAN validation (10 characters alphanumeric)
-    if case_data.get("customer_pan") and len(case_data["customer_pan"]) != 10:
+    if case_data.get("customer_pan") and len(str(case_data["customer_pan"]).strip()) != 10:
         errors.append("PAN must be exactly 10 characters")
     
     # Mobile validation (10 digits)
     if case_data.get("customer_mobile"):
-        if not case_data["customer_mobile"].isdigit() or len(case_data["customer_mobile"]) != 10:
+        mobile = str(case_data["customer_mobile"]).strip()
+        if not mobile.isdigit() or len(mobile) != 10:
             errors.append("Mobile number must be exactly 10 digits")
     
     # Email validation
     if case_data.get("customer_email"):
         import re
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_pattern, case_data["customer_email"]):
-            errors.append("Please enter a valid email address")
+        email = str(case_data["customer_email"]).strip()
+        if email:  # Only validate if email is provided
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email_pattern, email):
+                errors.append("Please enter a valid email address")
     
     # Loan amount validation
-    if case_data.get("loan_amount") and case_data["loan_amount"] <= 0:
-        errors.append("Loan amount must be greater than 0")
+    if case_data.get("loan_amount"):
+        try:
+            amount = float(case_data["loan_amount"])
+            if amount <= 0:
+                errors.append("Loan amount must be greater than 0")
+        except (ValueError, TypeError):
+            errors.append("Loan amount must be a valid number")
     
-    return len(errors) == 0, errors
+    return errors
+
 
 def save_uploaded_file(uploaded_file, case_id):
     """Save uploaded file to uploads directory"""
@@ -170,6 +179,17 @@ def get_dropdown_options():
             "Customer Service",
             "External Auditor",
             "Regulatory Authority"
+        ],
+        "statuses": [
+            "Draft",
+            "Submitted",
+            "Under Review",
+            "Approved",
+            "Rejected",
+            "Legal Review",
+            "Closed",
+            "Under Investigation",
+            "Investigation Completed"
         ]
     }
 
