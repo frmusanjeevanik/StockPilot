@@ -33,6 +33,7 @@ Preferred communication style: Simple, everyday language.
   - Admin can now assign/revoke "All Roles Access" to users
   - User management shows access level (specific role vs "All Roles")
   - Granted all roles access to 12 specified users for testing flexibility
+- Promoted bg407629 to Admin role with full system access
 - Removed "Address" field from all sections throughout the system
 - Added TAT (Turn Around Time) metrics to dashboard:
   - Average TAT for Review, Approval, Legal Review, and Closure processes
