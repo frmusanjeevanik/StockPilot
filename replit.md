@@ -91,6 +91,12 @@ Preferred communication style: Simple, everyday language.
   - Implemented hidden label with app navigation terms for system reference
   - Added professional footer "Powered by Fraud Risk Management Unit" in ABCL red color
   - Improved case description enhancement with AI-powered suggestions
+- Integrated AI Enhancement in Case Entry Form:
+  - Added "Enhance Description" feature directly in Case Entry form
+  - AI-powered case description improvement using Gemini
+  - Users can type basic description and get professionally enhanced version
+  - Maintains original case entry workflow while adding AI assistance
+  - Instructions provided to guide users on how to use the feature
 
 ## System Architecture
 

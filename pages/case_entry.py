@@ -1,9 +1,33 @@
 import streamlit as st
 import uuid
+import os
 from datetime import datetime
 from models import create_case
 from utils import validate_case_data, save_uploaded_file, get_dropdown_options
 from auth import get_current_user, get_user_function, get_user_referred_by
+from google import genai
+from google.genai import types
+
+def query_gemini(prompt, max_tokens=1000):
+    """Query Gemini API for intelligent responses"""
+    try:
+        # Initialize Gemini client if not already done
+        if not hasattr(st.session_state, 'gemini_client'):
+            os.environ['GEMINI_API_KEY'] = 'AIzaSyAZCvpTcGq-ie_3Vnh2obVaAzrFTnFnDqc'
+            st.session_state.gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+        
+        client = st.session_state.gemini_client
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                max_output_tokens=max_tokens,
+                temperature=0.3
+            )
+        )
+        return response.text if response.text else "Unable to generate response"
+    except Exception as e:
+        return f"Error generating response: {str(e)}"
 
 def show():
     """Display case entry page"""
@@ -95,12 +119,31 @@ def show():
         
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
-        # Case description
-        case_description = st.text_area(
-            "Case Description *",
-            placeholder="Provide detailed description of the case",
-            height=120
-        )
+        # Case description with AI enhancement
+        st.markdown("**Case Description ***")
+        st.info("💡 **Use AI to improve your case description:** Type your summary in the box. Click the small button on the bottom-right that says 'Enhance Description' to auto-generate or improve it using AI.")
+        
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            case_description = st.text_area(
+                "Case Description",
+                placeholder="Provide detailed description of the case",
+                height=120,
+                key="case_description_input",
+                label_visibility="collapsed"
+            )
+        with col2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            enhance_desc = st.form_submit_button("✨ Enhance Description", help="Use AI to improve case description")
+        
+        # Show enhanced description if available
+        if "enhanced_case_description" in st.session_state:
+            case_description = st.text_area(
+                "Enhanced Case Description",
+                value=st.session_state.enhanced_case_description,
+                height=120,
+                key="enhanced_description_display"
+            )
         
         # File upload
         st.subheader("Supporting Documents")
@@ -119,6 +162,29 @@ def show():
         with col2:
             submit_final = st.form_submit_button("📤 Submit Final", use_container_width=True)
         
+        # Handle description enhancement
+        if enhance_desc and st.session_state.get("case_description_input"):
+            with st.spinner("Enhancing description with AI..."):
+                enhanced_prompt = f"""
+                Please enhance and improve the following case description for a fraud investigation report. 
+                Make it more professional, detailed, and comprehensive while maintaining accuracy:
+                
+                Original description: {st.session_state.case_description_input}
+                
+                Please provide an enhanced version that:
+                1. Uses professional fraud investigation terminology
+                2. Structures information clearly
+                3. Highlights key risk factors
+                4. Maintains factual accuracy
+                5. Follows banking industry standards
+                
+                Do not use any bold formatting with asterisks in the output.
+                """
+                
+                enhanced_description = query_gemini(enhanced_prompt, max_tokens=800)
+                st.session_state.enhanced_case_description = enhanced_description
+                st.rerun()
+        
         # Handle form submission
         if save_draft or submit_final:
             case_data = {
@@ -128,7 +194,7 @@ def show():
                 "product": product,
                 "region": region,
                 "referred_by": referred_by,
-                "case_description": case_description.strip(),
+                "case_description": (case_description or "").strip(),
                 "case_date": case_date.strftime("%Y-%m-%d"),
                 "status": "Submitted" if submit_final else "Draft",
                 # Demographics
