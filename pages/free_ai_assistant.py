@@ -5,9 +5,9 @@ from auth import require_role
 
 @require_role(["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"])
 def show():
-    """Free AI Assistant using Hugging Face Inference API"""
-    st.title("🤖 Free AI Assistant")
-    st.markdown("**Free AI assistant for case analysis and document drafting using Hugging Face models**")
+    """AI Assistant using Hugging Face Inference API"""
+    st.title("🤖 AI Assistant")
+    st.markdown("**AI assistant for case analysis and document drafting using free Hugging Face models**")
     
     # Model selection
     st.subheader("AI Model Selection")
@@ -68,8 +68,7 @@ def show():
         3. **Investigation Guide**: Get guidance on investigation procedures
         4. **Chat Assistant**: Interactive assistance for general queries
         
-        **Note**: This free AI assistant provides basic functionality without API costs.
-        For advanced legal document generation, use the premium AI Legal Assistant.
+        **Note**: This AI assistant provides comprehensive functionality using free models without API costs.
         """)
 
 def query_huggingface_model(model_id, prompt, max_tokens=500):
@@ -113,43 +112,93 @@ def query_huggingface_model(model_id, prompt, max_tokens=500):
 
 def case_analysis_tool(model_id):
     """Case Analysis Tool"""
-    st.subheader("📋 Case Analysis")
+    st.subheader("📋 Intelligent Case Analysis")
     
     with st.form("case_analysis_form"):
+        case_type = st.selectbox(
+            "Case Type",
+            ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk", "Other"]
+        )
+        
         case_details = st.text_area(
             "Case Details",
-            placeholder="Describe the case details, allegations, and current status",
+            placeholder="Describe the case details, allegations, evidence found, and current status",
             height=150
         )
         
-        specific_question = st.text_input(
-            "Specific Question (Optional)",
-            placeholder="Any specific aspect you want analyzed?"
+        customer_info = st.text_input("Customer Information", placeholder="Customer name, loan amount, branch (optional)")
+        
+        evidence_available = st.multiselect(
+            "Evidence Available",
+            ["Bank Statements", "Identity Documents", "Income Proof", "Property Documents", "Employment Records", "Reference Checks", "Field Investigation Report", "Other"]
         )
         
-        analyze_btn = st.form_submit_button("Analyze Case", use_container_width=True)
+        risk_level = st.selectbox("Preliminary Risk Assessment", ["Low", "Medium", "High", "Critical"])
+        
+        specific_question = st.text_area(
+            "Specific Questions/Concerns",
+            placeholder="Any specific aspects you want analyzed or guidance needed",
+            height=80
+        )
+        
+        analyze_btn = st.form_submit_button("Generate Comprehensive Analysis", use_container_width=True)
         
         if analyze_btn and case_details:
-            with st.spinner("Analyzing case..."):
+            with st.spinner("Generating comprehensive case analysis..."):
+                evidence_str = ", ".join(evidence_available) if evidence_available else "None specified"
+                
                 prompt = f"""
-                As a fraud investigation expert, analyze this case:
+                As a senior fraud investigation analyst, provide a comprehensive analysis of this case:
                 
+                Case Type: {case_type}
                 Case Details: {case_details}
-                Specific Question: {specific_question}
+                Customer Information: {customer_info}
+                Evidence Available: {evidence_str}
+                Current Risk Level: {risk_level}
+                Specific Questions: {specific_question}
                 
-                Provide:
-                1. Key findings summary
-                2. Risk assessment
-                3. Recommended next steps
-                4. Areas requiring further investigation
+                Provide a detailed analysis including:
                 
-                Keep response concise and actionable.
+                1. EXECUTIVE SUMMARY
+                   - Key findings overview
+                   - Risk assessment validation
+                   
+                2. EVIDENCE EVALUATION
+                   - Strength of available evidence
+                   - Gaps in evidence collection
+                   
+                3. FRAUD INDICATORS
+                   - Red flags identified
+                   - Pattern analysis
+                   
+                4. RECOMMENDED ACTIONS
+                   - Immediate next steps
+                   - Investigation priorities
+                   - Documentation requirements
+                   
+                5. RISK MITIGATION
+                   - Recommended controls
+                   - Monitoring requirements
+                   
+                6. REGULATORY COMPLIANCE
+                   - Reporting obligations
+                   - Timeline considerations
+                
+                Keep the analysis professional, detailed, and actionable for banking operations.
                 """
                 
-                result = query_huggingface_model(model_id, prompt, max_tokens=800)
+                result = query_huggingface_model(model_id, prompt, max_tokens=1200)
                 
-                st.subheader("Case Analysis Result")
-                st.text_area("", value=result, height=400, key="case_analysis_result")
+                st.subheader("Comprehensive Case Analysis")
+                st.text_area("", value=result, height=600, key="case_analysis_result")
+                
+                # Download option
+                st.download_button(
+                    label="Download Analysis Report",
+                    data=result,
+                    file_name=f"case_analysis_{case_type.lower().replace(' ', '_')}.txt",
+                    mime="text/plain"
+                )
 
 def draft_notice_tool(model_id):
     """Draft Notice Tool"""
@@ -158,41 +207,65 @@ def draft_notice_tool(model_id):
     with st.form("draft_notice_form"):
         notice_type = st.selectbox(
             "Notice Type",
-            ["Show Cause Notice", "Information Request", "Warning Notice", "Compliance Notice"]
+            ["Show Cause Notice", "Information Request", "Warning Notice", "Compliance Notice", "Recovery Notice", "Legal Notice"]
         )
         
         recipient = st.text_input("Recipient Name", placeholder="Customer/Entity name")
         
-        reason = st.text_area(
-            "Reason/Issue",
-            placeholder="Describe the reason for the notice",
+        case_details = st.text_area(
+            "Case Details/Reason",
+            placeholder="Describe the case details and reason for the notice",
             height=100
         )
         
-        draft_btn = st.form_submit_button("Draft Notice", use_container_width=True)
+        loan_amount = st.number_input("Loan Amount (if applicable)", min_value=0.0, step=1000.0)
         
-        if draft_btn and reason:
-            with st.spinner("Drafting notice..."):
+        action_required = st.text_input("Action Required", placeholder="Specify what action is required from recipient")
+        
+        timeline = st.selectbox("Response Timeline", ["7 days", "15 days", "21 days", "30 days", "Other"])
+        
+        if timeline == "Other":
+            custom_timeline = st.text_input("Specify Timeline")
+            timeline = custom_timeline if custom_timeline else "15 days"
+        
+        draft_btn = st.form_submit_button("Generate Professional Notice", use_container_width=True)
+        
+        if draft_btn and case_details:
+            with st.spinner("Generating professional notice..."):
                 prompt = f"""
-                Draft a professional {notice_type} for:
+                Draft a professional {notice_type} for a financial institution:
                 
-                Recipient: {recipient}
-                Reason: {reason}
+                Recipient: {recipient or "Customer"}
+                Case Details: {case_details}
+                Loan Amount: ₹{loan_amount:,.2f} {"" if loan_amount > 0 else ""}
+                Action Required: {action_required}
+                Response Timeline: {timeline}
                 
-                Include:
-                1. Formal header
-                2. Clear statement of issue
-                3. Required action
-                4. Timeline for response
-                5. Professional closing
+                Create a formal, legally compliant notice with:
+                1. Proper bank letterhead format
+                2. Reference number and date
+                3. Clear statement of the issue/violation
+                4. Specific action required from recipient
+                5. Consequences of non-compliance
+                6. Timeline for response ({timeline})
+                7. Contact information for queries
+                8. Professional signature block
                 
-                Use formal business language appropriate for financial institutions.
+                Use formal banking language and ensure legal compliance.
                 """
                 
-                result = query_huggingface_model(model_id, prompt, max_tokens=600)
+                result = query_huggingface_model(model_id, prompt, max_tokens=800)
                 
-                st.subheader(f"Draft {notice_type}")
-                st.text_area("", value=result, height=400, key="draft_notice_result")
+                st.subheader(f"Generated {notice_type}")
+                st.text_area("", value=result, height=500, key="draft_notice_result")
+                
+                # Download option
+                st.download_button(
+                    label="Download Notice as Text File",
+                    data=result,
+                    file_name=f"{notice_type.lower().replace(' ', '_')}_{recipient or 'notice'}.txt",
+                    mime="text/plain"
+                )
 
 def investigation_guide_tool(model_id):
     """Investigation Guide Tool"""

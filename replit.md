@@ -55,17 +55,12 @@ Preferred communication style: Simple, everyday language.
   - Added Case ID and LAN columns to Cases Requiring Approval section
   - Cases Requiring Review section now shows actual submitted cases
   - Cases Requiring Approval section now shows actual cases under review
-- Integrated AI Legal Assistant powered by OpenAI GPT-4:
-  - Generate professional Show Cause Notices based on investigation findings
-  - Create comprehensive Reasoned Orders from investigation summaries
-  - Draft detailed Investigation Reports with proper structure
-  - Interactive chat assistant for legal guidance and fraud investigation advice
-  - Available to all user roles for enhanced document generation and legal support
-- Added Free AI Assistant for cost optimization:
-  - Uses Hugging Face free models (Llama 3.2, Phi-3, Mistral, CodeLlama)
-  - Case analysis and basic document drafting capabilities
-  - No API costs - completely free alternative to OpenAI
-  - Available alongside premium AI Legal Assistant
+- Implemented comprehensive AI Assistant using free Hugging Face models:
+  - Uses free models (Llama 3.2, Phi-3, Mistral, CodeLlama) - zero API costs
+  - Comprehensive case analysis with detailed fraud investigation guidance
+  - Professional document generation (Show Cause Notices, Legal Notices, Reports)
+  - Interactive chat assistant for investigation queries and compliance guidance
+  - Removed OpenAI dependency due to quota limitations
 - Implemented AI-powered auto-suggestions/completion:
   - Case description suggestions in Case Entry with "Get AI Suggestions" button
   - Quick remarks in all review stages (Review, Approval, Legal, Closure)

@@ -142,13 +142,18 @@ def show():
         
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
-        # Case description
+        # Case description with AI integration
+        st.markdown("**Case Description** *")
+        if st.session_state.get("selected_case_description"):
+            st.info(f"AI Template Applied: {st.session_state.selected_case_description[:100]}...")
+        
         case_description = st.text_area(
-            "Case Description *",
+            "",
             value=st.session_state.get("selected_case_description", ""),
-            placeholder="Provide detailed description of the case",
+            placeholder="Provide detailed description of the case or use AI templates above",
             height=120,
-            key="case_description_input"
+            key="case_description_input",
+            help="Use the AI-powered templates above to quickly fill in professional case descriptions"
         )
         
         # File upload

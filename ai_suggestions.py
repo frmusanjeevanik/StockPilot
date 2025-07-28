@@ -6,32 +6,42 @@ def get_case_description_suggestions():
     """Get common case description suggestions"""
     return [
         # Document Fraud
-        "Customer submitted forged bank statements with altered transaction history",
-        "Fake salary certificate provided with inflated income figures",
-        "Identity documents appear to be tampered or fabricated",
-        "Property documents submitted contain suspicious alterations",
-        "Educational certificates provided are not from recognized institutions",
+        "Customer submitted forged bank statements with altered transaction history and inflated balance figures",
+        "Fake salary certificate provided with inflated income figures exceeding industry standards",
+        "Identity documents appear to be tampered with suspicious alterations in critical fields",
+        "Property documents submitted contain suspicious alterations and questionable authenticity",
+        "Educational certificates provided are not from recognized institutions as per verification",
+        "Income tax returns submitted show discrepancies with actual filing records",
+        "Employment letter contains false information about designation and salary",
+        "Bank statements show digitally manipulated entries and suspicious formatting",
         
         # Financial Fraud
-        "Multiple loan applications detected across different branches with same details",
-        "Income source verification reveals discrepancies in employment history",
-        "Bank account statements show unusual large cash deposits before loan application",
-        "Credit history manipulation detected through external agency verification",
-        "Guarantor details found to be fictitious upon verification",
+        "Multiple loan applications detected across different branches with identical personal details",
+        "Income source verification reveals significant discrepancies in employment history and salary claims",
+        "Bank account statements show unusual large cash deposits immediately before loan application",
+        "Credit history manipulation detected through external credit bureau verification process",
+        "Guarantor details found to be fictitious with non-existent contact information upon verification",
+        "Declared assets found to be overvalued or non-existent during field verification",
+        "Business turnover claims inconsistent with GST returns and bank transaction history",
+        "Collateral security documents show signs of forgery and invalid registration details",
         
         # Compliance Violations
-        "KYC documents incomplete or not updated as per regulatory requirements",
-        "Customer failed to respond to multiple verification requests",
-        "Suspicious transaction patterns detected post loan disbursement",
-        "Non-compliance with loan utilization terms and conditions",
-        "Customer address verification failed - premises not traceable",
+        "KYC documents incomplete and not updated as per current regulatory requirements",
+        "Customer failed to respond to multiple verification requests within stipulated timeframe",
+        "Suspicious transaction patterns detected in account post loan disbursement",
+        "Non-compliance with loan utilization terms and conditions as per sanction letter",
+        "Customer address verification failed with premises found to be non-traceable",
+        "Mandatory regulatory approvals and clearances not obtained before loan processing",
+        "Customer provided false declarations regarding existing liabilities and commitments",
         
         # Investigation Findings
-        "Field investigation reveals customer business premises non-existent",
-        "Reference check confirms false information provided in application",
-        "Credit bureau report shows hidden existing loans not declared",
-        "Employment verification failed - company denies employee association",
-        "Collateral valuation found to be significantly overestimated"
+        "Field investigation reveals customer business premises non-existent at declared address",
+        "Reference check confirms false information provided in loan application",
+        "Credit bureau report shows hidden existing loans not declared during application",
+        "Employment verification failed with company denying any association with applicant",
+        "Collateral valuation found to be significantly overestimated compared to market rates",
+        "Technical examination of documents reveals sophisticated forgery techniques",
+        "Cross-verification with multiple data sources confirms fraudulent application"
     ]
 
 def get_remarks_suggestions():
