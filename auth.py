@@ -31,7 +31,20 @@ def authenticate_user(username, password, selected_role=None):
                     return False, f"Access denied. You can only login as '{user_assigned_role}' role."
             
             # Use selected role if provided and authorized, otherwise use user's default role
-            user_role = selected_role if selected_role and user_assigned_role == selected_role else user_assigned_role
+            if selected_role:
+                # For users with all_roles_access, allow any role except Admin (unless they are Admin)
+                if user_has_all_roles_access and selected_role != "Admin":
+                    user_role = selected_role
+                # For Admin users, allow any role
+                elif user_assigned_role == "Admin":
+                    user_role = selected_role
+                # For normal users, only allow their assigned role
+                elif user_assigned_role == selected_role:
+                    user_role = selected_role
+                else:
+                    user_role = user_assigned_role
+            else:
+                user_role = user_assigned_role
             
             st.session_state.authenticated = True
             st.session_state.username = username

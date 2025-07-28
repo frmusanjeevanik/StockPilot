@@ -49,9 +49,8 @@ def main():
     
     st.divider()
     
-    # Get user role
-    username = st.session_state.username
-    role = get_user_role(username)
+    # Get user role from session (the role they logged in as)
+    role = st.session_state.get("user_role", "Dashboard")
     
     # Sidebar navigation
     show_sidebar(role)
