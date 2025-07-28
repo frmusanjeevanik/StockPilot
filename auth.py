@@ -136,3 +136,14 @@ def get_remaining_session_time():
         if remaining.total_seconds() > 0:
             return int(remaining.total_seconds() / 60)
     return 0
+
+
+def require_auth(func):
+    """Decorator to require authentication for a function"""
+    def wrapper(*args, **kwargs):
+        if not is_authenticated():
+            st.error("Please log in to access this page.")
+            return None
+        return func(*args, **kwargs)
+    return wrapper
+

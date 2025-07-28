@@ -270,3 +270,184 @@ def search_cases(search_term, filters=None):
         
         cursor.execute(query, params)
         return cursor.fetchall()
+
+
+# Achievement and Gamification Functions
+def get_user_achievements(username):
+    """Get user's earned achievements"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                SELECT ua.*, a.name, a.description, a.icon, a.tier, a.points, a.category
+                FROM user_achievements ua
+                JOIN achievements a ON ua.achievement_id = a.id
+                WHERE ua.username = ?
+                ORDER BY ua.earned_at DESC
+            ''', (username,))
+            return cursor.fetchall()
+        except:
+            return []  # Return empty if tables don't exist yet
+
+def get_user_stats(username):
+    """Get comprehensive user statistics for gamification"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        
+        stats = {}
+        
+        # Total cases handled
+        cursor.execute('''
+            SELECT COUNT(*) FROM cases 
+            WHERE created_by = ? OR reviewed_by = ? OR approved_by = ? OR closed_by = ?
+        ''', (username, username, username, username))
+        stats["total_cases"] = cursor.fetchone()[0]
+        
+        # Cases this month
+        cursor.execute('''
+            SELECT COUNT(*) FROM cases 
+            WHERE (created_by = ? OR reviewed_by = ? OR approved_by = ? OR closed_by = ?)
+            AND created_at >= date('now', 'start of month')
+        ''', (username, username, username, username))
+        stats["cases_this_month"] = cursor.fetchone()[0]
+        
+        # Mock values for demo
+        stats["avg_resolution_time"] = 2.3
+        stats["quality_score"] = 85.0
+        stats["quality_improvement"] = 2.5
+        
+        # Achievement points
+        try:
+            cursor.execute('''
+                SELECT COALESCE(SUM(a.points), 0) FROM user_achievements ua
+                JOIN achievements a ON ua.achievement_id = a.id
+                WHERE ua.username = ?
+            ''', (username,))
+            stats["total_points"] = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                SELECT COALESCE(SUM(a.points), 0) FROM user_achievements ua
+                JOIN achievements a ON ua.achievement_id = a.id
+                WHERE ua.username = ? AND ua.earned_at >= date('now', '-7 days')
+            ''', (username,))
+            stats["points_this_week"] = cursor.fetchone()[0]
+        except:
+            stats["total_points"] = 0
+            stats["points_this_week"] = 0
+        
+        return stats
+
+def get_leaderboard(type_filter="overall_points"):
+    """Get leaderboard data"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        
+        try:
+            if type_filter == "overall_points":
+                cursor.execute('''
+                    SELECT u.username, u.name, u.team,
+                           COALESCE(SUM(a.points), 0) as score
+                    FROM users u
+                    LEFT JOIN user_achievements ua ON u.username = ua.username
+                    LEFT JOIN achievements a ON ua.achievement_id = a.id
+                    WHERE u.is_active = 1
+                    GROUP BY u.username, u.name, u.team
+                    ORDER BY score DESC
+                    LIMIT 20
+                ''')
+            elif type_filter == "cases_this_month":
+                cursor.execute('''
+                    SELECT u.username, u.name, u.team,
+                           COUNT(c.id) as score
+                    FROM users u
+                    LEFT JOIN cases c ON (u.username = c.created_by OR u.username = c.reviewed_by 
+                                        OR u.username = c.approved_by OR u.username = c.closed_by)
+                    AND c.created_at >= date('now', 'start of month')
+                    WHERE u.is_active = 1
+                    GROUP BY u.username, u.name, u.team
+                    ORDER BY score DESC
+                    LIMIT 20
+                ''')
+            else:
+                cursor.execute('''
+                    SELECT u.username, u.name, u.team,
+                           COUNT(c.id) as score
+                    FROM users u
+                    LEFT JOIN cases c ON (u.username = c.created_by OR u.username = c.reviewed_by 
+                                        OR u.username = c.approved_by OR u.username = c.closed_by)
+                    WHERE u.is_active = 1
+                    GROUP BY u.username, u.name, u.team
+                    ORDER BY score DESC
+                    LIMIT 20
+                ''')
+            
+            return cursor.fetchall()
+        except:
+            return []
+
+def check_and_award_achievements(username, action_type, case_data=None):
+    """Check if user qualifies for new achievements and award them"""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Get user's current stats
+            stats = get_user_stats(username)
+            
+            # Check various achievement conditions
+            achievements_to_award = []
+            
+            # First Case achievement
+            if stats["total_cases"] == 1:
+                achievements_to_award.append("first_case")
+            
+            # Case milestones
+            case_milestones = [5, 10, 25, 50, 100]
+            if stats["total_cases"] in case_milestones:
+                achievements_to_award.append(f"cases_{stats['total_cases']}")
+            
+            # Award achievements
+            for achievement_id in achievements_to_award:
+                award_achievement(username, achievement_id, conn)
+    except:
+        pass  # Fail silently if achievement system not ready
+
+def award_achievement(username, achievement_id, conn=None):
+    """Award an achievement to a user"""
+    try:
+        if conn is None:
+            with get_db_connection() as conn:
+                _award_achievement_internal(username, achievement_id, conn)
+        else:
+            _award_achievement_internal(username, achievement_id, conn)
+    except:
+        pass
+
+def _award_achievement_internal(username, achievement_id, conn):
+    """Internal function to award achievement"""
+    cursor = conn.cursor()
+    
+    # Check if user already has this achievement
+    cursor.execute('''
+        SELECT COUNT(*) FROM user_achievements 
+        WHERE username = ? AND achievement_id = ?
+    ''', (username, achievement_id))
+    
+    if cursor.fetchone()[0] == 0:
+        # Award the achievement
+        cursor.execute('''
+            INSERT INTO user_achievements (username, achievement_id, earned_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+        ''', (username, achievement_id))
+        conn.commit()
+
+
+
+# Hook achievements to case creation and updates  
+def trigger_achievement_check(username, action_type, case_data=None):
+    """Trigger achievement checking after case actions"""
+    try:
+        check_and_award_achievements(username, action_type, case_data)
+    except:
+        pass  # Fail silently
+

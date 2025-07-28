@@ -19,6 +19,7 @@ import pages.admin_panel as admin_panel
 import pages.user_management as user_management
 import pages.simple_ai_assistant as simple_ai_assistant
 import pages.investigation_panel as investigation_panel
+import pages.achievements as achievements
 
 # Page configuration
 st.set_page_config(
@@ -190,6 +191,9 @@ def show_sidebar(role):
     # Add AI assistant for all roles except basic users
     if role in ["Legal Reviewer", "Reviewer", "Approver", "Initiator", "Actioner", "Investigator"]:
         menu_items.append("AI Assistant")
+    
+    # Add Achievements for all users
+    menu_items.append("🏆 Achievements")
 
     
     # Initialize selected page
@@ -251,6 +255,8 @@ def show_main_content():
         user_management.show()
     elif page == "AI Assistant":
         simple_ai_assistant.show()
+    elif page == "🏆 Achievements":
+        achievements.show()
     else:
         st.error("Page not found")
 

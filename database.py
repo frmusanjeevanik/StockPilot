@@ -195,6 +195,32 @@ def init_database():
         except sqlite3.OperationalError:
             pass  # Column already exists
         
+        # Achievement tables
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS achievements (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                icon TEXT NOT NULL,
+                tier TEXT NOT NULL DEFAULT 'bronze',
+                points INTEGER NOT NULL DEFAULT 10,
+                category TEXT NOT NULL DEFAULT 'General',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS user_achievements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                achievement_id TEXT NOT NULL,
+                earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (username) REFERENCES users (username),
+                FOREIGN KEY (achievement_id) REFERENCES achievements (id),
+                UNIQUE(username, achievement_id)
+            )
+        ''')
+        
         conn.commit()
         
         # Clean up old test users first
@@ -216,6 +242,28 @@ def init_database():
                                      functional_designation, referred_by) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (username, password_hash, role, email, name, team, designation, referred_by))
+        
+        # Initialize default achievements
+        default_achievements = [
+            ("first_case", "First Case", "Handle your first case", "🎯", "bronze", 10, "Getting Started"),
+            ("cases_5", "Case Handler", "Successfully handle 5 cases", "📝", "bronze", 25, "Progress"),
+            ("cases_10", "Case Expert", "Successfully handle 10 cases", "🏅", "silver", 50, "Progress"),
+            ("cases_25", "Case Master", "Successfully handle 25 cases", "🎖️", "silver", 100, "Progress"),
+            ("cases_50", "Case Champion", "Successfully handle 50 cases", "🏆", "gold", 250, "Progress"),
+            ("cases_100", "Case Legend", "Successfully handle 100 cases", "👑", "gold", 500, "Progress"),
+            ("speed_resolver", "Speed Demon", "Resolve cases quickly", "⚡", "silver", 75, "Performance"),
+            ("quality_expert", "Quality Master", "Maintain high quality standards", "💎", "gold", 200, "Performance"),
+            ("team_player", "Team Player", "Collaborate effectively", "🤝", "bronze", 30, "Collaboration"),
+            ("mentor", "Mentor", "Help train new team members", "🎓", "gold", 150, "Leadership")
+        ]
+        
+        for achievement_id, name, description, icon, tier, points, category in default_achievements:
+            cursor.execute("SELECT COUNT(*) FROM achievements WHERE id = ?", (achievement_id,))
+            if cursor.fetchone()[0] == 0:
+                cursor.execute('''
+                    INSERT INTO achievements (id, name, description, icon, tier, points, category) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (achievement_id, name, description, icon, tier, points, category))
         
         conn.commit()
 
