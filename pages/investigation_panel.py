@@ -439,24 +439,24 @@ def show_investigation_details():
                 from models import add_case_comment
                 investigation_summary = f"""Investigation Summary:
                 
-**Document Verification:**
+Document Verification:
 - PAN: {pan_verification}
 - Aadhaar: {aadhaar_verification}  
 - Bank Statement: {bank_statement_verification}
 - Address: {address_verification}
 
-**Contact & Employment:**
+Contact & Employment:
 - Employment: {employment_verification}
 - Mobile: {mobile_verification}
 - CIBIL: {cibil_review}
 - Form 26AS: {form26as_review}
 
-**Analysis:**
+Analysis:
 - Modus Operandi: {modus_operandi[:100]}{'...' if len(modus_operandi) > 100 else ''}
 - Root Cause: {root_cause_analysis[:100]}{'...' if len(root_cause_analysis) > 100 else ''}
 
-**Status:** {investigation_status}
-**Comments:** {investigation_comments[:100]}{'...' if len(investigation_comments) > 100 else ''}
+Status: {investigation_status}
+Comments: {investigation_comments[:100]}{'...' if len(investigation_comments) > 100 else ''}
                 """
                 
                 add_case_comment(
