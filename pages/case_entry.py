@@ -137,18 +137,40 @@ def show():
         st.markdown("**Case Description ***")
         st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
         
-        col1, col2 = st.columns([4, 1])
-        with col1:
-            case_description = st.text_area(
-                "Case Description",
-                placeholder="Provide detailed description of the case",
-                height=120,
-                key="case_description_input",
-                label_visibility="collapsed"
-            )
+        # Container for text area with positioned button
+        st.markdown("""
+        <style>
+        .enhance-container {
+            position: relative;
+        }
+        .enhance-button {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            z-index: 1000;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Text area with relative positioning for button overlay
+        case_description = st.text_area(
+            "Case Description",
+            placeholder="Provide detailed description of the case",
+            height=120,
+            key="case_description_input",
+            label_visibility="collapsed"
+        )
+        
+        # Small enhance button positioned at bottom-right  
+        col1, col2 = st.columns([5, 1])
         with col2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            enhance_desc = st.form_submit_button("✨ Enhance Description", help="Use AI to improve case description")
+            st.markdown("<div style='text-align: right; margin-top: -25px;'>", unsafe_allow_html=True)
+            enhance_desc = st.form_submit_button(
+                "✨ Enhance", 
+                help="Use AI to improve case description",
+                use_container_width=False
+            )
+            st.markdown("</div>", unsafe_allow_html=True)
         
         # Show enhanced description if available
         if "enhanced_case_description" in st.session_state:

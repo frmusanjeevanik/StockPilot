@@ -96,7 +96,9 @@ Preferred communication style: Simple, everyday language.
   - AI-powered case description improvement using Gemini
   - Users can type basic description and get professionally enhanced version
   - Maintains original case entry workflow while adding AI assistance
-  - Instructions provided to guide users on how to use the feature
+  - Updated UI with concise instruction: "Tip: Type your case summary. Click 'Enhance Description' to improve it using AI."
+  - Compact "✨ Enhance" button positioned in bottom-right corner with proper styling
+  - Post-login AI tip popup appears for Initiator, Investigator, and Admin roles (session-based, shows once per login)
 
 ## System Architecture
 
