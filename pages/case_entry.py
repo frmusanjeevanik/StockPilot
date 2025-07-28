@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from models import create_case
 from utils import validate_case_data, save_uploaded_file, get_dropdown_options
-from auth import get_current_user
+from auth import get_current_user, get_user_function
 
 def show():
     """Display case entry page"""
@@ -66,7 +66,24 @@ def show():
         with col1:
             region = st.selectbox("Region *", options["regions"])
         with col2:
-            referred_by = st.selectbox("Referred By *", options["referred_by"])
+            # Auto-fill "Referred By" based on user's function name
+            user_function = get_user_function()
+            referred_by_options = options["referred_by"]
+            default_index = 0
+            if user_function:
+                # Map function names to referred_by options
+                function_mapping = {
+                    "Initiator": "Business Unit",
+                    "Reviewer": "Operation Unit", 
+                    "Approver": "Credit Unit",
+                    "Legal Reviewer": "Legal Unit",
+                    "Admin": "Compliance Team"
+                }
+                mapped_value = function_mapping.get(user_function, user_function)
+                if mapped_value in referred_by_options:
+                    default_index = referred_by_options.index(mapped_value)
+            
+            referred_by = st.selectbox("Referred By *", referred_by_options, index=default_index)
         with col3:
             case_date = st.date_input("Case Date *", datetime.today())
         

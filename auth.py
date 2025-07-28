@@ -4,19 +4,29 @@ from datetime import datetime, timedelta
 from models import get_user_by_username
 from database import get_password_hash
 
-def authenticate_user(username, password):
+def authenticate_user(username, password, selected_role=None):
     """Authenticate user with username and password"""
     user = get_user_by_username(username)
     if user:
         password_hash = get_password_hash(password)
         if user["password_hash"] == password_hash:
+            # Use selected role if provided, otherwise use user's default role
+            user_role = selected_role if selected_role else user["role"]
+            
             st.session_state.authenticated = True
             st.session_state.username = username
-            st.session_state.user_role = user["role"]
+            st.session_state.user_role = user_role
+            st.session_state.user_function = user["role"]  # Store original function for referral
             st.session_state.login_time = datetime.now()
             st.session_state.last_activity = datetime.now()
             return True
     return False
+
+def get_user_function():
+    """Get current user's function name for referral purposes"""
+    if is_authenticated():
+        return st.session_state.get("user_function")
+    return None
 
 def is_authenticated():
     """Check if user is authenticated"""

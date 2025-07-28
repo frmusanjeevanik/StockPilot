@@ -87,8 +87,12 @@ def show_login():
         st.markdown("<div style='margin-left: 50px;'margin-top: 80px;'>", unsafe_allow_html=True)
         with st.form("login_form"):
             st.markdown("### UAT Mode")
-            username = st.text_input("Username", placeholder="Enter your username")
+            username = st.text_input("User ID", placeholder="Enter your User ID")
             password = st.text_input("Password", type="password", placeholder="Enter your password")
+            
+            # Role selection dropdown
+            roles = ["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"]
+            selected_role = st.selectbox("Login as Role", roles)
             
             col_a, col_b, col_c = st.columns([1, 1, 1])
             with col_b:
@@ -96,13 +100,13 @@ def show_login():
             
             if login_button:
                 if username and password:
-                    if authenticate_user(username, password):
+                    if authenticate_user(username, password, selected_role):
                         st.success("✅ Login successful!")
                         st.rerun()
                     else:
-                        st.error("❌ Invalid username or password")
+                        st.error("❌ Invalid User ID or password")
                 else:
-                    st.warning("⚠️ Please enter both username and password")
+                    st.warning("⚠️ Please enter both User ID and password")
         st.markdown("</div>", unsafe_allow_html=True)
 
 def show_sidebar(role):
@@ -130,10 +134,10 @@ def show_sidebar(role):
         menu_items.append("Approver Panel")
     elif role == "Legal Reviewer":
         menu_items.append("Legal Panel")
-    elif role == "Action Closure Authority":
-        menu_items.append("🔒 Action Closure Panel")
+    elif role == "Actioner":
+        menu_items.append("🔒 Actioner Panel")
     elif role == "Admin":
-           menu_items.extend(["Case Entry", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Action Closure Panel", "Admin Panel", "User Management"])
+           menu_items.extend(["Case Entry", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Actioner Panel", "Admin Panel", "User Management"])
 
     
     # Initialize selected page
@@ -185,7 +189,7 @@ def show_main_content():
         approver_panel.show()
     elif page == "Legal Panel":
         legal_panel.show()
-    elif page == "Closure Panel":
+    elif page == "🔒 Actioner Panel":
         closure_panel.show()
     elif page == "Admin Panel":
         admin_panel.show()

@@ -12,9 +12,15 @@ Preferred communication style: Simple, everyday language.
 - Enhanced Case Entry form with comprehensive demographic details:
   - Customer Name, Date of Birth, PAN, Address, Mobile Number, Email ID
   - Branch/Location, Loan Amount, Disbursement Date
+- Auto-fill "Referred By" field based on user's function name with intelligent mapping
+- Updated login system with User ID/password and role selection dropdown
+- Added TAT (Turn Around Time) metrics to dashboard:
+  - Average TAT for Review, Approval, Legal Review, and Closure processes
+  - TAT trend charts and SLA compliance metrics
+- Changed nomenclature from "Action Closure Authority" to "Actioner" throughout system
 - Removed Quick Access section from sidebar (kept only Navigation, User Info, and Logout)
 - Added User Management system for Admin users:
-  - View all users with statistics
+  - View all users with statistics dashboard
   - Add new users with role assignment
   - Edit existing users (role, email, active status, password reset)
   - Soft delete users (deactivate instead of permanent deletion)

@@ -3,10 +3,10 @@ from models import get_cases_by_status, update_case_status, get_case_comments, a
 from utils import get_status_color, format_datetime, format_file_size
 from auth import get_current_user, require_role
 
-@require_role(["Action Closure Authority", "Admin"])
+@require_role(["Actioner", "Admin"])
 def show():
-    """Display action closure authority panel"""
-    st.title("🔒 Action Closure Panel")
+    """Display actioner panel"""
+    st.title("🔒 Actioner Panel")
     
     current_user = get_current_user()
     

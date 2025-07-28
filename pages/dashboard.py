@@ -33,6 +33,84 @@ def show():
     
     st.divider()
     
+    # TAT (Turn Around Time) Section
+    st.subheader("📊 Turn Around Time (TAT) Metrics")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Avg. Review TAT", "2.5 days", delta="-0.3 days")
+    
+    with col2:
+        st.metric("Avg. Approval TAT", "1.8 days", delta="+0.2 days")
+    
+    with col3:
+        st.metric("Avg. Legal Review TAT", "3.2 days", delta="-0.5 days")
+    
+    with col4:
+        st.metric("Avg. Closure TAT", "1.2 days", delta="-0.1 days")
+    
+    # TAT Trend Chart
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("TAT Trends")
+        # Sample data for TAT trends
+        import plotly.graph_objects as go
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=["Week 1", "Week 2", "Week 3", "Week 4"],
+            y=[2.8, 2.5, 2.3, 2.5],
+            mode='lines+markers',
+            name='Review TAT',
+            line=dict(color='blue')
+        ))
+        fig.add_trace(go.Scatter(
+            x=["Week 1", "Week 2", "Week 3", "Week 4"],
+            y=[2.0, 1.8, 1.6, 1.8],
+            mode='lines+markers',
+            name='Approval TAT',
+            line=dict(color='green')
+        ))
+        fig.add_trace(go.Scatter(
+            x=["Week 1", "Week 2", "Week 3", "Week 4"],
+            y=[3.7, 3.2, 3.0, 3.2],
+            mode='lines+markers',
+            name='Legal Review TAT',
+            line=dict(color='purple')
+        ))
+        fig.update_layout(
+            title="TAT Trends (Days)",
+            xaxis_title="Time Period",
+            yaxis_title="Days",
+            height=400
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.subheader("SLA Compliance")
+        # SLA compliance data
+        sla_data = {
+            "Review": 85,
+            "Approval": 92,
+            "Legal Review": 78,
+            "Closure": 95
+        }
+        
+        fig = px.bar(
+            x=list(sla_data.keys()),
+            y=list(sla_data.values()),
+            title="SLA Compliance (%)",
+            labels={"x": "Process", "y": "Compliance %"},
+            color=list(sla_data.values()),
+            color_continuous_scale="RdYlGn"
+        )
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    st.divider()
+    
     # Charts
     col1, col2 = st.columns(2)
     

@@ -86,7 +86,7 @@ def show_add_user():
                 "Reviewer", 
                 "Approver",
                 "Legal Reviewer",
-                "Action Closure Authority",
+                "Actioner",
                 "Admin"
             ])
             email = st.text_input("Email", placeholder="Enter email address")
@@ -156,9 +156,9 @@ def show_edit_user():
                     "Reviewer", 
                     "Approver",
                     "Legal Reviewer",
-                    "Action Closure Authority",
+                    "Actioner",
                     "Admin"
-                ], index=["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Action Closure Authority", "Admin"].index(selected_user['role']))
+                ], index=["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"].index(selected_user['role']))
                 
                 new_email = st.text_input("Email", value=selected_user['email'] or "", placeholder="Enter email address")
             
