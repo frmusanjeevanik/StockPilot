@@ -12,6 +12,59 @@ def show():
     current_user = get_current_user()
     options = get_dropdown_options()
     
+    # AI Suggestions Section (outside form)
+    st.subheader("💡 AI-Powered Case Description Assistant")
+    col_ai1, col_ai2, col_ai3 = st.columns([1, 1, 1])
+    
+    with col_ai1:
+        if st.button("📝 Get Case Templates", use_container_width=True):
+            from ai_suggestions import get_case_description_suggestions
+            suggestions = get_case_description_suggestions()
+            st.session_state.case_desc_suggestions = suggestions
+    
+    with col_ai2:
+        if st.button("🔍 Investigation Templates", use_container_width=True):
+            investigation_templates = [
+                "Field investigation revealed discrepancies in customer provided documentation",
+                "Technical verification of submitted documents shows signs of manipulation",
+                "Employment verification failed - company confirmed no association with applicant",
+                "Income source verification reveals inconsistencies in financial statements",
+                "Property verification shows overvaluation and ownership disputes"
+            ]
+            st.session_state.case_desc_suggestions = investigation_templates
+    
+    with col_ai3:
+        if st.button("⚖️ Compliance Templates", use_container_width=True):
+            compliance_templates = [
+                "KYC documentation found incomplete as per regulatory standards",
+                "Customer failed to respond to verification requests within stipulated timeframe",
+                "Non-compliance with loan utilization conditions detected",
+                "Regulatory reporting requirements not met by customer",
+                "Anti-money laundering checks revealed suspicious transaction patterns"
+            ]
+            st.session_state.case_desc_suggestions = compliance_templates
+    
+    # Show suggestions if available
+    if "case_desc_suggestions" in st.session_state:
+        st.markdown("**Quick Suggestions (click to use):**")
+        suggestion_cols = st.columns(2)
+        for i, suggestion in enumerate(st.session_state.case_desc_suggestions[:8]):
+            col_idx = i % 2
+            with suggestion_cols[col_idx]:
+                if st.button(f"📋 {suggestion[:50]}...", key=f"desc_sugg_{i}", help=suggestion, use_container_width=True):
+                    st.session_state.selected_case_description = suggestion
+                    st.success(f"Template selected! Scroll down to see it in the case description field.")
+                    st.rerun()
+        
+        if st.button("🗑️ Clear Suggestions", use_container_width=True):
+            if "case_desc_suggestions" in st.session_state:
+                del st.session_state.case_desc_suggestions
+            if "selected_case_description" in st.session_state:
+                del st.session_state.selected_case_description
+            st.rerun()
+    
+    st.divider()
+    
     with st.form("case_entry_form"):
         st.subheader("Enter New Case Details")
         
@@ -89,34 +142,11 @@ def show():
         
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
-        # Case description with AI suggestions
-        st.markdown("**Case Description** *")
-        
-        # AI suggestion button
-        col_desc1, col_desc2 = st.columns([3, 1])
-        with col_desc2:
-            if st.button("💡 Get AI Suggestions", key="case_desc_suggestions"):
-                from ai_suggestions import get_case_description_suggestions
-                suggestions = get_case_description_suggestions()
-                st.session_state.case_desc_suggestions = suggestions
-        
-        # Show suggestions if available
-        if "case_desc_suggestions" in st.session_state:
-            st.markdown("**Quick Suggestions:**")
-            suggestion_cols = st.columns(2)
-            for i, suggestion in enumerate(st.session_state.case_desc_suggestions[:6]):
-                col_idx = i % 2
-                with suggestion_cols[col_idx]:
-                    if st.button(f"📝 {suggestion[:50]}...", key=f"desc_sugg_{i}", help=suggestion):
-                        st.session_state.selected_case_description = suggestion
-                        st.rerun()
-        
-        # Case description text area
-        initial_desc = st.session_state.get("selected_case_description", "")
+        # Case description
         case_description = st.text_area(
-            "",
-            value=initial_desc,
-            placeholder="Provide detailed description of the case, or click 'Get AI Suggestions' for templates",
+            "Case Description *",
+            value=st.session_state.get("selected_case_description", ""),
+            placeholder="Provide detailed description of the case",
             height=120,
             key="case_description_input"
         )
