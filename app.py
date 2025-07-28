@@ -100,11 +100,12 @@ def show_login():
             
             if login_button:
                 if username and password:
-                    if authenticate_user(username, password, selected_role):
+                    success, message = authenticate_user(username, password, selected_role)
+                    if success:
                         st.success("✅ Login successful!")
                         st.rerun()
                     else:
-                        st.error("❌ Invalid User ID or password")
+                        st.error(f"❌ {message}")
                 else:
                     st.warning("⚠️ Please enter both User ID and password")
         st.markdown("</div>", unsafe_allow_html=True)

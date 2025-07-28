@@ -163,39 +163,14 @@ def init_database():
         
         conn.commit()
         
-        # Insert default users if they don't exist
+        # Clean up old test users first
+        test_users_to_remove = ["initiator", "reviewer", "approver", "legal", "closure", "actioner"]
+        for user_id in test_users_to_remove:
+            cursor.execute("DELETE FROM users WHERE username = ?", (user_id,))
+        
+        # Insert default users if they don't exist (all real users from the master list)
         default_users = [
-            ("admin", "admin123", "Admin", "admin@abcl.com", "System Administrator", "IT", "System Admin", "Technical Team"),
-            # User master data from the provided list
-            ("bg390458", "Password", "Initiator", None, "Rohit Vinayak Shirwadkar", "Investigation", "TL - FRMU Central Investigation", "GRT"),
-            ("bg407629", "Password", "Initiator", None, "Suneel Kumar Ramdeen Vishwakarma", "Process & Analytics", "TL - FRMU Initiatives", "GRT"),
-            ("bg429291", "Password", "Initiator", None, "Suhas Vijay Bhalerao", "Investigation", "Lead - FRMU Investigation", "GRT"),
-            ("bg430234", "Password", "Initiator", None, "Goutam Barman", "Investigation", "Regional Investigation Manager", "Credit Unit"),
-            ("bg430299", "Password", "Initiator", None, "Alphanso Nathaniel Nagalapurkar", "Investigation", "Regional Investigation Manager", "Credit Unit"),
-            ("bg435597", "Password", "Initiator", None, "Ansuya Rajesh Pogula", "Process & Analytics", "Product & Process Manager", "Credit Unit"),
-            ("bg450935", "Password", "Initiator", None, "Narasingh Nath Patnaik", "Investigation", "Location Investigation Manager", "Credit Unit"),
-            ("bg451782", "Password", "Initiator", None, "Aniket .", "Process & Analytics", "Team Member - MIS", "Credit Unit"),
-            ("bg453173", "Password", "Initiator", None, "Suraj Laxman Patil", "Investigation", "FRMU Manager - Investigation", "HR"),
-            ("bg457666", "Password", "Initiator", None, "Thiyagarajan Shanmugasundaram", "Investigation", "Regional Investigation Manager", "HR"),
-            ("bg457850", "Password", "Initiator", None, "Sethuraman G", "Investigation", "Location Investigation Manager", "Policy Team"),
-            ("bg457851", "Password", "Initiator", None, "Soumyajit Dey", "Investigation", "Location Investigation Manager", "GRT"),
-            ("bg458548", "Password", "Initiator", None, "Ayushi Mishra", "Investigation", "Location Investigation Manager", "GRT"),
-            ("bg462182", "Password", "Initiator", None, "Atul Bharti", "Investigation", "Location Investigation Manager", "GRT"),
-            ("bg463878", "Password", "Initiator", None, "Jagruti Anil Bane", "Investigation", "FRMU Manager - Investigation", "GRT"),
-            ("bg468635", "Password", "Initiator", None, "Disha Bipin Mehta", "Investigation", "Location Investigation Manager", "GRT"),
-            ("bg473039", "Password", "Initiator", None, "Ajay Omprakash Pardeshi", "Process & Analytics", "Team Member - FRMU", "GRT"),
-            ("bg475121", "Password", "Initiator", None, "Manan Jasmin Bhatt", "Process & Analytics", "Product & Process Manager", "Operation Unit"),
-            ("bg486324", "Password", "Initiator", None, "Ankit Lakra", "Investigation", "Location Investigation Manager", "GRT"),
-            ("bg488164", "Password", "Initiator", None, "SURUTHISRI B", "Investigation", "Location Investigation Manager", "GRT"),
-            ("VEN95932", "Password", "Initiator", None, "Subhodip Pandit", "Investigation", "EXECUTIVE", "GRT"),
-            ("VEN96228", "Password", "Initiator", None, "Thiyaneshwaran Arivazagan", "Investigation", "EXECUTIVE", "GRT"),
-            ("VEN96943", "Password", "Initiator", None, "Reeya Amit Kumar Chauhan", "Investigation", "EXECUTIVE", "GRT"),
-            ("VEN97271", "Password", "Initiator", None, "Ashok Kumar Barik", "Investigation", "EXECUTIVE", "GRT"),
-            ("BG455072", "Password", "Initiator", None, "Dhiren Anil Valecha", "Process & Analytics", "Team Member - FRMU", "Legal Unit"),
-            ("BG481149", "Password", "Initiator", None, "Pooja Dinesh Sawant", "Process & Analytics", "Product & Process Manager", "GRT"),
-            ("VEN95122", "Password", "Initiator", None, "Pranali Dharma Diwadkar", "Process & Analytics", "EXECUTIVE", "GRT"),
-            ("VEN95761", "Password", "Initiator", None, "Sagar Nagesh Jali", "Investigation", "EXECUTIVE", "GRT"),
-            ("VEN96731", "Password", "Initiator", None, "Mohd Sharifulhaq Shahabuddin Qadri", "Process & Analytics", "EXECUTIVE", "GRT")
+            ("admin", "admin123", "Admin", "admin@abcl.com", "System Administrator", "IT", "System Admin", "Technical Team")
         ]
         
         for username, password, role, email, name, team, designation, referred_by in default_users:

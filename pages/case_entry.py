@@ -35,13 +35,9 @@ def show():
         
         col1, col2 = st.columns(2)
         with col1:
-            customer_address = st.text_area("Address *", placeholder="Enter complete address", height=80)
+            customer_mobile = st.text_input("Mobile Number *", placeholder="Enter 10-digit mobile", max_chars=10)
         with col2:
-            col2_1, col2_2 = st.columns(2)
-            with col2_1:
-                customer_mobile = st.text_input("Mobile Number *", placeholder="Enter 10-digit mobile", max_chars=10)
-            with col2_2:
-                customer_email = st.text_input("Email ID *", placeholder="Enter email address")
+            customer_email = st.text_input("Email ID *", placeholder="Enter email address")
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -133,7 +129,7 @@ def show():
                 "customer_name": customer_name.strip(),
                 "customer_dob": customer_dob.strftime("%Y-%m-%d"),
                 "customer_pan": customer_pan.strip().upper(),
-                "customer_address": customer_address.strip(),
+
                 "customer_mobile": customer_mobile.strip(),
                 "customer_email": customer_email.strip().lower(),
                 "branch_location": branch_location.strip(),

@@ -20,7 +20,12 @@ Preferred communication style: Simple, everyday language.
     - Process & Analytics team members 
     - Regional and Location Investigation Managers
     - All users have proper team assignments and referral mappings
-- Updated login system with User ID/password and role selection dropdown
+- Updated login system to use User ID/password authentication only:
+  - Removed old username/password system completely
+  - Users can only login with their assigned role (strict role-based restriction)
+  - Clear error messages for unauthorized role access attempts
+  - Removed old test users (initiator, reviewer, approver, etc.)
+- Removed "Address" field from all sections throughout the system
 - Added TAT (Turn Around Time) metrics to dashboard:
   - Average TAT for Review, Approval, Legal Review, and Closure processes
   - TAT trend charts and SLA compliance metrics
