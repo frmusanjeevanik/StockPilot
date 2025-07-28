@@ -377,9 +377,9 @@ def show_ai_chat_assistant():
             })
             st.rerun()
     
-    # Hidden label at the bottom left
+    # Hidden label at the bottom left - almost invisible
     st.markdown("""
-    <div style='position: fixed; bottom: 5px; left: 5px; font-size: 1px; color: #F2F0F6; z-index: 1000;'>
+    <div style='position: fixed; bottom: 0px; left: 0px; font-size: 6px; color: #F2F0F6; z-index: 1000; opacity: 0.1;'>
     app admin panel analytics approver panel case entry closure panel dashboard legal panel reviewer panel simple ai assistant user management
     </div>
     """, unsafe_allow_html=True)
