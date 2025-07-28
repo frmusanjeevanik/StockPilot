@@ -50,6 +50,11 @@ Preferred communication style: Simple, everyday language.
   - Mobile number validation (10 digits)
   - Email format validation
   - Loan amount validation (must be greater than 0)
+- Enhanced Dashboard functionality:
+  - Added Case ID and LAN columns to Recent Cases section
+  - Added Case ID and LAN columns to Cases Requiring Approval section
+  - Cases Requiring Review section now shows actual submitted cases
+  - Cases Requiring Approval section now shows actual cases under review
 - Updated database schema to support all user master fields
 - Fixed LSP errors in user management and form validation
 
