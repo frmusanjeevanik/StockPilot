@@ -3,3 +3,8 @@ pandas
 numpy
 matplotlib
 uuid
+plotly
+streamlit
+pandas
+plotly
+streamlit
