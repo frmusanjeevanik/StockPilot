@@ -38,11 +38,13 @@ def show_case_management():
     """Show case management interface combining case entry and review functionality"""
     st.subheader("📋 Case Management")
     
-    # Get current user info
-    current_user = get_current_user()
-    if isinstance(current_user, str):
-        current_user = {"username": current_user, "name": current_user, "team": "Investigation", "referred_by": current_user}
-    elif current_user is None:
+    # Get current user info and ensure it's a dictionary
+    current_user_raw = get_current_user()
+    if isinstance(current_user_raw, str):
+        current_user = {"username": current_user_raw, "name": current_user_raw, "team": "Investigation", "referred_by": current_user_raw}
+    elif isinstance(current_user_raw, dict):
+        current_user = current_user_raw
+    else:
         current_user = {"username": "Unknown", "name": "Unknown", "team": "Investigation", "referred_by": "Unknown"}
     
     # Two columns for case entry and case review
@@ -271,8 +273,7 @@ def show_case_management():
                     st.markdown(f"**Status:** {selected_case['status']}")
                     st.markdown(f"**Description:** {selected_case['case_description']}")
                     
-                    if st.button("🔍 Start Investigation", use_container_width=True):
-                        st.info("✅ Case selected for investigation. Switch to 'Investigation Details' tab to continue.")
+                st.info("✅ Case selected for investigation. Switch to 'Investigation Details' tab to continue.")
         else:
             st.info("📭 No cases available for investigation")
 
@@ -348,7 +349,15 @@ def show_investigation_details():
         
         # Submit investigation
         if st.form_submit_button("💾 Save Investigation Details", use_container_width=True):
-            current_user = get_current_user() or {}
+            current_user = get_current_user()
+            
+            # Handle current_user properly - it might be a string or dict
+            if isinstance(current_user, str):
+                username = current_user
+            elif isinstance(current_user, dict):
+                username = current_user.get('username', 'Unknown')
+            else:
+                username = 'Unknown'
             
             # Save investigation details to database
             investigation_data = {
@@ -371,7 +380,7 @@ def show_investigation_details():
                 'legal_action': legal_action,
                 'investigation_status': investigation_status,
                 'investigation_comments': investigation_comments,
-                'investigated_by': current_user.get('username'),
+                'investigated_by': username,
                 'investigation_date': datetime.now()
             }
             
@@ -473,7 +482,7 @@ Comments: {investigation_comments[:100]}{'...' if len(investigation_comments) > 
                     selected_case, 
                     investigation_summary, 
                     "Investigation Report", 
-                    current_user.get('username', 'Investigator')
+                    username
                 )
                 
                 # Update case status based on investigation status
@@ -488,8 +497,8 @@ Comments: {investigation_comments[:100]}{'...' if len(investigation_comments) > 
                 log_audit(
                     selected_case, 
                     "Investigation Details Saved", 
-                    f"Investigation completed by {current_user.get('username')} - Status: {investigation_status}", 
-                    current_user.get('username')
+                    f"Investigation completed by {username} - Status: {investigation_status}", 
+                    username
                 )
 
 def show_investigation_analytics():
