@@ -69,12 +69,49 @@ def validate_case_data(case_data):
     """Validate case data"""
     errors = []
     
+    # Required fields for basic case data
     required_fields = ["lan", "case_description"]
     for field in required_fields:
         if not case_data.get(field, "").strip():
             errors.append(f"{field.replace('_', ' ').title()} is required")
     
+    # Required demographic fields
+    demographic_fields = [
+        "customer_name", "customer_dob", "customer_pan", 
+        "customer_address", "customer_mobile", "customer_email",
+        "branch_location", "loan_amount", "disbursement_date"
+    ]
+    
+    for field in demographic_fields:
+        value = case_data.get(field)
+        if field == "loan_amount":
+            if not value or value <= 0:
+                errors.append("Loan Amount must be greater than 0")
+        elif not value or (isinstance(value, str) and not value.strip()):
+            errors.append(f"{field.replace('_', ' ').title()} is required")
+    
+    # Validate PAN format (10 characters alphanumeric)
+    pan = case_data.get("customer_pan", "").strip()
+    if pan and (len(pan) != 10 or not pan.isalnum()):
+        errors.append("PAN must be 10 characters alphanumeric")
+    
+    # Validate mobile number (10 digits)
+    mobile = case_data.get("customer_mobile", "").strip()
+    if mobile and (len(mobile) != 10 or not mobile.isdigit()):
+        errors.append("Mobile number must be 10 digits")
+    
+    # Validate email format
+    email = case_data.get("customer_email", "").strip()
+    if email and not is_valid_email(email):
+        errors.append("Invalid email format")
+    
     return errors
+
+def is_valid_email(email):
+    """Validate email format"""
+    import re
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
 
 def get_status_color(status):
     """Get color for status display"""

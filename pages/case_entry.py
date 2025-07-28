@@ -19,8 +19,40 @@ def show():
         if "auto_case_id" not in st.session_state:
             st.session_state.auto_case_id = f"CASE{datetime.now().strftime('%Y%m%d')}{uuid.uuid4().hex[:6].upper()}"
         
-        # All fields in rows
+        # Auto-generated Case ID
         case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID")
+        
+        # Customer Demographics Section
+        st.subheader("👤 Customer Demographics")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            customer_name = st.text_input("Customer Name *", placeholder="Enter full customer name")
+        with col2:
+            customer_dob = st.date_input("Date of Birth *", max_value=datetime.today())
+        with col3:
+            customer_pan = st.text_input("PAN *", placeholder="Enter PAN number", max_chars=10)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            customer_address = st.text_area("Address *", placeholder="Enter complete address", height=80)
+        with col2:
+            col2_1, col2_2 = st.columns(2)
+            with col2_1:
+                customer_mobile = st.text_input("Mobile Number *", placeholder="Enter 10-digit mobile", max_chars=10)
+            with col2_2:
+                customer_email = st.text_input("Email ID *", placeholder="Enter email address")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            branch_location = st.text_input("Branch / Location *", placeholder="Enter branch name")
+        with col2:
+            loan_amount = st.number_input("Loan Amount *", min_value=0.0, step=1000.0, format="%.2f")
+        with col3:
+            disbursement_date = st.date_input("Disbursement Date *", max_value=datetime.today())
+        
+        # Case Details Section
+        st.subheader("📋 Case Details")
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -75,7 +107,17 @@ def show():
                 "referred_by": referred_by,
                 "case_description": case_description.strip(),
                 "case_date": case_date.strftime("%Y-%m-%d"),
-                "status": "Submitted" if submit_final else "Draft"
+                "status": "Submitted" if submit_final else "Draft",
+                # Demographics
+                "customer_name": customer_name.strip(),
+                "customer_dob": customer_dob.strftime("%Y-%m-%d"),
+                "customer_pan": customer_pan.strip().upper(),
+                "customer_address": customer_address.strip(),
+                "customer_mobile": customer_mobile.strip(),
+                "customer_email": customer_email.strip().lower(),
+                "branch_location": branch_location.strip(),
+                "loan_amount": loan_amount,
+                "disbursement_date": disbursement_date.strftime("%Y-%m-%d")
             }
             
             # Validate data

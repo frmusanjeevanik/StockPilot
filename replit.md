@@ -9,14 +9,22 @@ Tathya is a comprehensive case management system built with Streamlit for handli
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (July 28, 2025)
-- Restored original code files from main directory to pages directory
-- Reorganized sidebar layout: Navigation panel on top, followed by User Information and Quick Access
-- User Information and Quick Access sections moved to sidebar with smaller fonts
-- Removed session expiry message display (only shows remaining time)
-- Maintained all navigation functionality with complete access to all panels based on user roles
-- Analytics panel restored to Admin navigation menu
-- Main content area now uses full width without right column
-- Fixed plotly import and variable initialization errors
+- Enhanced Case Entry form with comprehensive demographic details:
+  - Customer Name, Date of Birth, PAN, Address, Mobile Number, Email ID
+  - Branch/Location, Loan Amount, Disbursement Date
+- Removed Quick Access section from sidebar (kept only Navigation, User Info, and Logout)
+- Added User Management system for Admin users:
+  - View all users with statistics
+  - Add new users with role assignment
+  - Edit existing users (role, email, active status, password reset)
+  - Soft delete users (deactivate instead of permanent deletion)
+- Enhanced validation for case entry:
+  - PAN format validation (10 characters alphanumeric)
+  - Mobile number validation (10 digits)
+  - Email format validation
+  - Loan amount validation (must be greater than 0)
+- Updated database schema to support demographic fields
+- Fixed LSP errors in user management and form validation
 
 ## System Architecture
 

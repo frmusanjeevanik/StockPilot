@@ -1,0 +1,30 @@
+L1_manager_id	employee_name	Team	functional_designation	Role
+bg390458	Rohit Vinayak Shirwadkar	Investigation	TL - FRMU Central Investigation	All roles
+bg407629	Suneel Kumar Ramdeen Vishwakarma	Process & Analytics	TL - FRMU Initiatives	All roles
+bg429291	Suhas Vijay Bhalerao	Investigation	Lead - FRMU Investigation	All roles,exect Admin
+bg430234	Goutam Barman	Investigation	Regional Investigation Manager	All roles,exect Admin
+bg430299	Alphanso Nathaniel Nagalapurkar	Investigation	Regional Investigation Manager	All roles,exect Admin
+bg435597	Ansuya Rajesh Pogula	Process & Analytics	Product & Process Manager	All roles
+bg450935	Narasingh Nath Patnaik	Investigation	Location Investigation Manager	All roles,exect Admin
+bg451782	Aniket .	Process & Analytics	Team Member - MIS	All roles
+bg453173	Suraj Laxman Patil	Investigation	FRMU Manager - Investigation	All roles,exect Admin
+bg457666	Thiyagarajan Shanmugasundaram	Investigation	Regional Investigation Manager	All roles,exect Admin
+bg457850	Sethuraman G	Investigation	Location Investigation Manager	All roles,exect Admin
+bg457851	Soumyajit Dey	Investigation	Location Investigation Manager	All roles,exect Admin
+bg458548	Ayushi Mishra	Investigation	Location Investigation Manager	All roles,exect Admin
+bg462182	Atul Bharti	Investigation	Location Investigation Manager	All roles,exect Admin
+bg463878	Jagruti Anil Bane	Investigation	FRMU Manager - Investigation	All roles,exect Admin
+bg468635	Disha Bipin Mehta	Investigation	Location Investigation Manager	All roles,exect Admin
+bg473039	Ajay Omprakash Pardeshi	Process & Analytics	Team Member - FRMU	All roles
+bg475121	Manan Jasmin Bhatt	Process & Analytics	Product & Process Manager	All roles
+bg486324	Ankit Lakra	Investigation	Location Investigation Manager	All roles,exect Admin
+bg488164	SURUTHISRI B	Investigation	Location Investigation Manager	All roles,exect Admin
+VEN95932	Subhodip Pandit	Investigation	EXECUTIVE	All roles,exect Admin
+VEN96228	Thiyaneshwaran Arivazagan	Investigation	EXECUTIVE	All roles,exect Admin
+VEN96943	Reeya Amit Kumar Chauhan	Investigation	EXECUTIVE	All roles,exect Admin
+VEN97271	Ashok Kumar Barik	Investigation	EXECUTIVE	All roles,exect Admin
+BG455072	Dhiren Anil Valecha	Process & Analytics	Team Member - FRMU	All roles
+BG481149	Pooja Dinesh Sawant	Process & Analytics	Product & Process Manager	All roles
+VEN95122	Pranali Dharma Diwadkar	Process & Analytics	EXECUTIVE	All roles
+VEN95761	Sagar Nagesh Jali	Investigation	EXECUTIVE	All roles,exect Admin
+VEN96731	Mohd Sharifulhaq Shahabuddin Qadri	Process & Analytics	EXECUTIVE	All roles

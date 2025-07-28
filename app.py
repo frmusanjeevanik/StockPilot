@@ -16,6 +16,7 @@ import pages.approver_panel as approver_panel
 import pages.legal_panel as legal_panel
 import pages.closure_panel as closure_panel
 import pages.admin_panel as admin_panel
+import pages.user_management as user_management
 
 # Page configuration
 st.set_page_config(
@@ -132,7 +133,7 @@ def show_sidebar(role):
     elif role == "Action Closure Authority":
         menu_items.append("🔒 Action Closure Panel")
     elif role == "Admin":
-           menu_items.extend(["Case Entry", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Action Closure Panel", "Admin Panel"])
+           menu_items.extend(["Case Entry", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Action Closure Panel", "Admin Panel", "User Management"])
 
     
     # Initialize selected page
@@ -163,45 +164,6 @@ def show_sidebar(role):
     
     st.sidebar.divider()
     
-    # Quick access navigation based on role in smaller font
-    st.sidebar.markdown("<small><strong>🔗 Quick Access</strong></small>", unsafe_allow_html=True)
-    
-    # Role-specific quick links
-    if role == "Initiator":
-        if st.sidebar.button("📝 New Case", key="quick_case_entry", use_container_width=True):
-            st.session_state.selected_page = "Case Entry"
-            st.rerun()
-    elif role == "Reviewer":
-        if st.sidebar.button("🔍 Review Cases", key="quick_reviewer", use_container_width=True):
-            st.session_state.selected_page = "Reviewer Panel"
-            st.rerun()
-    elif role == "Approver":
-        if st.sidebar.button("✅ Approve Cases", key="quick_approver", use_container_width=True):
-            st.session_state.selected_page = "Approver Panel"
-            st.rerun()
-    elif role == "Legal Reviewer":
-        if st.sidebar.button("⚖️ Legal Review", key="quick_legal", use_container_width=True):
-            st.session_state.selected_page = "Legal Panel"
-            st.rerun()
-    elif role == "Action Closure Authority":
-        if st.sidebar.button("🔒 Close Cases", key="quick_closure", use_container_width=True):
-            st.session_state.selected_page = "Closure Panel"
-            st.rerun()
-    elif role == "Admin":
-        if st.sidebar.button("🛠️ Admin Panel", key="quick_admin", use_container_width=True):
-            st.session_state.selected_page = "Admin Panel"
-            st.rerun()
-        if st.sidebar.button("📊 Analytics", key="quick_analytics", use_container_width=True):
-            st.session_state.selected_page = "Analytics"
-            st.rerun()
-    
-    # Common quick access for all users
-    if st.sidebar.button("🏠 Dashboard", key="quick_dashboard", use_container_width=True):
-        st.session_state.selected_page = "Dashboard"
-        st.rerun()
-    
-    st.sidebar.divider()
-    
     # Logout button
     if st.sidebar.button("🚪 Logout", use_container_width=True):
         logout_user()
@@ -227,6 +189,8 @@ def show_main_content():
         closure_panel.show()
     elif page == "Admin Panel":
         admin_panel.show()
+    elif page == "User Management":
+        user_management.show()
     else:
         st.error("Page not found")
 
