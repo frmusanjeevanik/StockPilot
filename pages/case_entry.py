@@ -3,7 +3,7 @@ import uuid
 import os
 from datetime import datetime
 from models import create_case
-from utils import validate_case_data, save_uploaded_file, get_dropdown_options
+from utils import validate_case_data, save_uploaded_file, get_dropdown_options, generate_case_id
 from auth import get_current_user, get_user_function, get_user_referred_by
 from google import genai
 from google.genai import types
@@ -74,12 +74,18 @@ def show():
         
         st.subheader("📝 Enter New Case Details")
         
-        # Auto-generate Case ID
+        # Auto-generate Case ID in format CASE20250728CE806A
         if "auto_case_id" not in st.session_state:
-            st.session_state.auto_case_id = f"CASE{datetime.now().strftime('%Y%m%d')}{uuid.uuid4().hex[:6].upper()}"
+            st.session_state.auto_case_id = generate_case_id()
         
-        # Auto-generated Case ID
-        case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID")
+        col_id1, col_id2 = st.columns([3, 1])
+        with col_id1:
+            case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID in format: CASE20250728CE806A")
+        with col_id2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.form_submit_button("🔄 Generate New ID"):
+                st.session_state.auto_case_id = generate_case_id()
+                st.rerun()
         
         # Auto-fill "Referred By" based on current user's information
         current_user_id = get_current_user()
@@ -277,7 +283,7 @@ def show():
                         
                         for uploaded_file in uploaded_files:
                             file_success, filename = save_uploaded_file(
-                                uploaded_file, case_data["case_id"], current_user
+                                uploaded_file, case_data["case_id"]
                             )
                             if file_success:
                                 upload_success_count += 1
@@ -286,7 +292,7 @@ def show():
                             st.success(f"✅ {upload_success_count} file(s) uploaded successfully!")
                     
                     # Generate new case ID for next case
-                    st.session_state.auto_case_id = f"CASE{datetime.now().strftime('%Y%m%d')}{uuid.uuid4().hex[:6].upper()}"
+                    st.session_state.auto_case_id = generate_case_id()
                     
                     st.balloons()
                     

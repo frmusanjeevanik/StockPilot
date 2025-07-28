@@ -108,6 +108,13 @@ Preferred communication style: Simple, everyday language.
   - Auto-updates case status based on investigation completion (Draft → Submitted → Under Review)
   - Complete demographic data flow from Investigation Panel to reviewer workflow
   - Professional investigation tracking with audit trail and status management
+- Implemented Auto-Generated Case ID System:
+  - Standardized Case ID format: CASE20250728CE806A (CASE + YYYYMMDD + 2 letters + 3 digits + 1 letter)
+  - Auto-generation in Case Entry form with "🔄 Generate New ID" button
+  - Auto-generation in Investigation Panel for new cases
+  - Consistent Case ID format across all pages including Dashboard, Reviewer Panel, Approver Panel
+  - Case ID displayed and tracked throughout complete workflow from creation to closure
+  - Unique ID ensures no duplicates and maintains professional case tracking standards
 
 ## System Architecture
 

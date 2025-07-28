@@ -4,6 +4,7 @@ from datetime import datetime, date
 from auth import require_role, get_current_user
 from models import get_cases_by_status, get_case_by_id, update_case_status, get_case_comments
 from database import get_db_connection, log_audit
+from utils import generate_case_id
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -52,13 +53,21 @@ def show_case_management():
         st.info("💡 **Auto-fill feature:** If you select an existing case ID, demographic details will auto-populate from the Case Entry system.")
         
         with st.form("quick_case_entry"):
-            # Case ID input with auto-fetch functionality
-            col_a, col_b = st.columns([3, 1])
+            # Case ID input with auto-generation and auto-fetch functionality
+            col_a, col_b, col_c = st.columns([2, 1, 1])
             with col_a:
-                case_id = st.text_input("Case ID *", placeholder="Enter case ID to auto-fetch details")
+                # Auto-generate Case ID if creating new case
+                if "investigation_case_id" not in st.session_state:
+                    st.session_state.investigation_case_id = generate_case_id()
+                case_id = st.text_input("Case ID *", value=st.session_state.investigation_case_id, help="Format: CASE20250728CE806A - Auto-generated or enter existing")
             with col_b:
                 st.markdown("<br>", unsafe_allow_html=True)
                 auto_fill = st.form_submit_button("🔍 Fetch Details")
+            with col_c:
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.form_submit_button("🔄 New ID"):
+                    st.session_state.investigation_case_id = generate_case_id()
+                    st.rerun()
             
             # Initialize default values
             default_values = {
@@ -578,6 +587,17 @@ def generate_investigation_pdf_report(case_details, investigation_details):
     styles = getSampleStyleSheet()
     story = []
     
+    # Convert sqlite3.Row to dict for easier access
+    if case_details:
+        case_dict = dict(case_details)
+    else:
+        case_dict = {}
+    
+    if investigation_details:
+        investigation_dict = dict(investigation_details)
+    else:
+        investigation_dict = {}
+    
     # Title
     title_style = ParagraphStyle(
         'CustomTitle',
@@ -599,14 +619,14 @@ def generate_investigation_pdf_report(case_details, investigation_details):
     # NBFC Details
     nbfc_data = [
         ["Name of NBFC", "Aditya Birch Capital Limited"],
-        ["Fraud Number", case_details.get('case_id', 'N/A')],
+        ["Fraud Number", case_dict.get('case_id', 'N/A')],
     ]
     
     # Branch Details
     branch_data = [
-        ["Name of the Branch", case_details.get('branch_location', 'N/A')],
+        ["Name of the Branch", case_dict.get('branch_location', 'N/A')],
         ["Branch Type", "Branch Office"],
-        ["Place", case_details.get('branch_location', 'N/A')],
+        ["Place", case_dict.get('branch_location', 'N/A')],
         ["District", "N/A"],
         ["State", "N/A"]
     ]
@@ -630,11 +650,11 @@ def generate_investigation_pdf_report(case_details, investigation_details):
     # Case Details
     case_data = [
         ["Name of Principal Party/Account", "[Redacted for Privacy]"],
-        ["Area of Operations", case_details.get('case_type', 'N/A')],
-        ["Nature of Fraud", case_details.get('case_type', 'N/A')],
-        ["Total Amount Involved", f"₹{case_details.get('loan_amount', 'N/A')}"],
-        ["Date of Occurrence", str(case_details.get('case_date', 'N/A'))],
-        ["Date of Detection", str(case_details.get('created_at', 'N/A'))[:10]],
+        ["Area of Operations", case_dict.get('case_type', 'N/A')],
+        ["Nature of Fraud", case_dict.get('case_type', 'N/A')],
+        ["Total Amount Involved", f"₹{case_dict.get('loan_amount', 'N/A')}"],
+        ["Date of Occurrence", str(case_dict.get('case_date', 'N/A'))],
+        ["Date of Detection", str(case_dict.get('created_at', 'N/A'))[:10]],
     ]
     
     story.append(Paragraph("Case Information", styles['Heading3']))
