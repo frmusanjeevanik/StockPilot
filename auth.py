@@ -28,6 +28,14 @@ def get_user_function():
         return st.session_state.get("user_function")
     return None
 
+def get_user_referred_by():
+    """Get current user's default referred by value"""
+    if is_authenticated():
+        user = get_user_by_username(st.session_state.username)
+        if user and user.get("referred_by"):
+            return user["referred_by"]
+    return None
+
 def is_authenticated():
     """Check if user is authenticated"""
     return st.session_state.get("authenticated", False)

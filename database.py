@@ -33,6 +33,10 @@ def init_database():
                 password_hash TEXT NOT NULL,
                 role TEXT NOT NULL,
                 email TEXT,
+                name TEXT,
+                team TEXT,
+                functional_designation TEXT,
+                referred_by TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 is_active BOOLEAN DEFAULT 1
             )
@@ -136,24 +140,49 @@ def init_database():
         
         conn.commit()
         
+        # Add new columns to existing users table if they don't exist
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN name TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN team TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN functional_designation TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN referred_by TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        conn.commit()
+        
         # Insert default users if they don't exist
         default_users = [
-            ("admin", "admin123", "Admin", "admin@abcl.com"),
-            ("initiator", "init123", "Initiator", "initiator@abcl.com"),
-            ("reviewer", "review123", "Reviewer", "reviewer@abcl.com"),
-            ("approver", "approve123", "Approver", "approver@abcl.com"),
-            ("legal", "legal123", "Legal Reviewer", "legal@abcl.com"),
-            ("closure", "closure123", "Action Closure Authority", "closure@abcl.com")
+            ("admin", "admin123", "Admin", "admin@abcl.com", "System Administrator", "IT", "System Admin", "Technical Team"),
+            ("bg390458", "Password", "Initiator", None, "Rohit Vinayak Shirwadkar", "Investigation", "TL - FRMU Central Investigation", "GRT"),
+            ("initiator", "init123", "Initiator", "initiator@abcl.com", "Sample Initiator", "Business", "Business Analyst", "Business Unit"),
+            ("reviewer", "review123", "Reviewer", "reviewer@abcl.com", "Sample Reviewer", "Operations", "Operations Manager", "Operation Unit"),
+            ("approver", "approve123", "Approver", "approver@abcl.com", "Sample Approver", "Credit", "Credit Manager", "Credit Unit"),
+            ("legal", "legal123", "Legal Reviewer", "legal@abcl.com", "Sample Legal", "Legal", "Legal Counsel", "Legal Unit"),
+            ("actioner", "action123", "Actioner", "actioner@abcl.com", "Sample Actioner", "Operations", "Action Manager", "Operation Unit")
         ]
         
-        for username, password, role, email in default_users:
+        for username, password, role, email, name, team, designation, referred_by in default_users:
             cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (username,))
             if cursor.fetchone()[0] == 0:
                 password_hash = get_password_hash(password)
-                cursor.execute(
-                    "INSERT INTO users (username, password_hash, role, email) VALUES (?, ?, ?, ?)",
-                    (username, password_hash, role, email)
-                )
+                cursor.execute('''
+                    INSERT INTO users (username, password_hash, role, email, name, team, 
+                                     functional_designation, referred_by) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (username, password_hash, role, email, name, team, designation, referred_by))
         
         conn.commit()
 

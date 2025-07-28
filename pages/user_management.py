@@ -35,8 +35,12 @@ def show_users_list():
         user_data = []
         for user in users:
             user_data.append({
-                "Username": user["username"],
-                "Role": user["role"],
+                "User ID": user["username"],
+                "Name": user["name"] or "N/A",
+                "Team": user["team"] or "N/A",
+                "Functional Designation": user["functional_designation"] or "N/A",
+                "System Role": user["role"],
+                "Referred By": user["referred_by"] or "N/A",
                 "Email": user["email"] or "N/A",
                 "Status": "Active" if user["is_active"] else "Inactive",
                 "Created": user["created_at"][:10] if user["created_at"] else "N/A"
@@ -73,21 +77,32 @@ def show_add_user():
     st.subheader("Add New User")
     
     with st.form("add_user_form"):
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
-            username = st.text_input("Username *", placeholder="Enter unique username")
+            username = st.text_input("User ID *", placeholder="e.g., bg390458")
             password = st.text_input("Password *", type="password", placeholder="Enter password")
             confirm_password = st.text_input("Confirm Password *", type="password", placeholder="Confirm password")
         
         with col2:
-            role = st.selectbox("Role *", [
+            name = st.text_input("Name *", placeholder="Enter full name")
+            team = st.text_input("Team *", placeholder="e.g., Investigation")
+            functional_designation = st.text_input("Functional Designation *", placeholder="e.g., TL - FRMU Central Investigation")
+        
+        with col3:
+            role = st.selectbox("System Role *", [
                 "Initiator",
                 "Reviewer", 
                 "Approver",
                 "Legal Reviewer",
                 "Actioner",
                 "Admin"
+            ])
+            referred_by = st.selectbox("Referred By *", [
+                "Audit Team", "Business Unit", "Collection Unit", "Compliance Team", "Credit Unit",
+                "Customer Service", "GRT", "HR", "Legal Unit", "MD / CEO Escalation",
+                "Operation Risk Management", "Operation Unit", "Other Function", "Policy Team",
+                "Risk Containment Unit", "Sales Unit", "Technical Team"
             ])
             email = st.text_input("Email", placeholder="Enter email address")
             is_active = st.checkbox("Active User", value=True)
@@ -99,9 +114,18 @@ def show_add_user():
             errors = []
             
             if not username or not username.strip():
-                errors.append("Username is required")
+                errors.append("User ID is required")
             elif len(username.strip()) < 3:
-                errors.append("Username must be at least 3 characters long")
+                errors.append("User ID must be at least 3 characters long")
+            
+            if not name or not name.strip():
+                errors.append("Name is required")
+            
+            if not team or not team.strip():
+                errors.append("Team is required")
+            
+            if not functional_designation or not functional_designation.strip():
+                errors.append("Functional Designation is required")
             
             if not password:
                 errors.append("Password is required")
@@ -119,7 +143,18 @@ def show_add_user():
                     st.error(f"❌ {error}")
             else:
                 # Create user
-                success, message = create_user(username.strip(), password, role, email.strip() if email else None, is_active)
+                user_data = {
+                    'username': username.strip(),
+                    'password': password,
+                    'role': role,
+                    'email': email.strip() if email else None,
+                    'name': name.strip(),
+                    'team': team.strip(),
+                    'functional_designation': functional_designation.strip(),
+                    'referred_by': referred_by,
+                    'is_active': is_active
+                }
+                success, message = create_user(user_data)
                 
                 if success:
                     st.success(f"✅ User '{username}' created successfully!")
@@ -146,12 +181,17 @@ def show_edit_user():
         selected_user = users[selected_user_index]
         
         with st.form("edit_user_form"):
-            st.write(f"Editing user: **{selected_user['username']}**")
+            st.write(f"Editing user: **{selected_user['username']} - {selected_user['name']}**")
             
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             
             with col1:
-                new_role = st.selectbox("Role", [
+                new_name = st.text_input("Name", value=selected_user['name'] or "", placeholder="Enter full name")
+                new_team = st.text_input("Team", value=selected_user['team'] or "", placeholder="Enter team")
+                new_functional_designation = st.text_input("Functional Designation", value=selected_user['functional_designation'] or "", placeholder="Enter designation")
+            
+            with col2:
+                new_role = st.selectbox("System Role", [
                     "Initiator",
                     "Reviewer", 
                     "Approver",
@@ -160,9 +200,21 @@ def show_edit_user():
                     "Admin"
                 ], index=["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"].index(selected_user['role']))
                 
+                new_referred_by = st.selectbox("Referred By", [
+                    "Audit Team", "Business Unit", "Collection Unit", "Compliance Team", "Credit Unit",
+                    "Customer Service", "GRT", "HR", "Legal Unit", "MD / CEO Escalation",
+                    "Operation Risk Management", "Operation Unit", "Other Function", "Policy Team",
+                    "Risk Containment Unit", "Sales Unit", "Technical Team"
+                ], index=[
+                    "Audit Team", "Business Unit", "Collection Unit", "Compliance Team", "Credit Unit",
+                    "Customer Service", "GRT", "HR", "Legal Unit", "MD / CEO Escalation",
+                    "Operation Risk Management", "Operation Unit", "Other Function", "Policy Team",
+                    "Risk Containment Unit", "Sales Unit", "Technical Team"
+                ].index(selected_user['referred_by']) if selected_user['referred_by'] else 0)
+                
                 new_email = st.text_input("Email", value=selected_user['email'] or "", placeholder="Enter email address")
             
-            with col2:
+            with col3:
                 new_is_active = st.checkbox("Active User", value=bool(selected_user['is_active']))
                 
                 # Password reset option
@@ -207,6 +259,10 @@ def show_edit_user():
                     update_data = {
                         'role': new_role,
                         'email': new_email.strip() if new_email else None,
+                        'name': new_name.strip() if new_name else None,
+                        'team': new_team.strip() if new_team else None,
+                        'functional_designation': new_functional_designation.strip() if new_functional_designation else None,
+                        'referred_by': new_referred_by,
                         'is_active': new_is_active
                     }
                     
@@ -236,25 +292,36 @@ def get_all_users():
         cursor.execute("SELECT * FROM users ORDER BY created_at DESC")
         return cursor.fetchall()
 
-def create_user(username, password, role, email=None, is_active=True):
+def create_user(user_data):
     """Create a new user"""
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
             
             # Check if username already exists
-            cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (username,))
+            cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (user_data['username'],))
             if cursor.fetchone()[0] > 0:
-                return False, "Username already exists"
+                return False, "User ID already exists"
             
             # Hash password
-            password_hash = get_password_hash(password)
+            password_hash = get_password_hash(user_data['password'])
             
             # Insert user
             cursor.execute('''
-                INSERT INTO users (username, password_hash, role, email, is_active)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (username, password_hash, role, email, is_active))
+                INSERT INTO users (username, password_hash, role, email, name, team, 
+                                 functional_designation, referred_by, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                user_data['username'], 
+                password_hash, 
+                user_data['role'], 
+                user_data['email'],
+                user_data['name'],
+                user_data['team'],
+                user_data['functional_designation'],
+                user_data['referred_by'],
+                user_data['is_active']
+            ))
             
             conn.commit()
             return True, "User created successfully"
@@ -279,6 +346,22 @@ def update_user(username, update_data):
             if 'email' in update_data:
                 set_clauses.append("email = ?")
                 values.append(update_data['email'])
+            
+            if 'name' in update_data:
+                set_clauses.append("name = ?")
+                values.append(update_data['name'])
+            
+            if 'team' in update_data:
+                set_clauses.append("team = ?")
+                values.append(update_data['team'])
+            
+            if 'functional_designation' in update_data:
+                set_clauses.append("functional_designation = ?")
+                values.append(update_data['functional_designation'])
+            
+            if 'referred_by' in update_data:
+                set_clauses.append("referred_by = ?")
+                values.append(update_data['referred_by'])
             
             if 'is_active' in update_data:
                 set_clauses.append("is_active = ?")
