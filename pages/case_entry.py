@@ -81,6 +81,31 @@ def show():
         # Auto-generated Case ID
         case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID")
         
+        # Auto-fill "Referred By" based on current user's information
+        current_user_id = get_current_user()
+        user_referred_by = get_user_referred_by()
+        referred_by_options = options["referred_by"]
+        default_index = 0
+        
+        if user_referred_by and user_referred_by in referred_by_options:
+            default_index = referred_by_options.index(user_referred_by)
+        elif get_user_function():
+            # Fallback to function mapping if no stored referred_by
+            user_function = get_user_function()
+            function_mapping = {
+                "Initiator": "Business Unit",
+                "Reviewer": "Operation Unit", 
+                "Approver": "Credit Unit",
+                "Legal Reviewer": "Legal Unit",
+                "Admin": "Compliance Team",
+                "Investigator": "Investigation Unit"
+            }
+            mapped_value = function_mapping.get(user_function, user_function) if user_function else None
+            if mapped_value and mapped_value in referred_by_options:
+                default_index = referred_by_options.index(mapped_value)
+        
+        referred_by = st.selectbox("Referred By *", referred_by_options, index=default_index, help=f"Auto-filled based on user: {current_user_id}")
+        
         # Customer Demographics Section
         st.subheader("👤 Customer Demographics")
         
@@ -117,33 +142,10 @@ def show():
         with col3:
             product = st.selectbox("Product *", options["products"])
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         with col1:
             region = st.selectbox("Region *", options["regions"])
         with col2:
-            # Auto-fill "Referred By" based on user's stored referred_by value
-            user_referred_by = get_user_referred_by()
-            referred_by_options = options["referred_by"]
-            default_index = 0
-            
-            if user_referred_by and user_referred_by in referred_by_options:
-                default_index = referred_by_options.index(user_referred_by)
-            elif get_user_function():
-                # Fallback to function mapping if no stored referred_by
-                user_function = get_user_function()
-                function_mapping = {
-                    "Initiator": "Business Unit",
-                    "Reviewer": "Operation Unit", 
-                    "Approver": "Credit Unit",
-                    "Legal Reviewer": "Legal Unit",
-                    "Admin": "Compliance Team"
-                }
-                mapped_value = function_mapping.get(user_function, user_function) if user_function else None
-                if mapped_value and mapped_value in referred_by_options:
-                    default_index = referred_by_options.index(mapped_value)
-            
-            referred_by = st.selectbox("Referred By *", referred_by_options, index=default_index)
-        with col3:
             case_date = st.date_input("Case Date *", datetime.today())
         
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
