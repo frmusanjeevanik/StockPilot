@@ -4,7 +4,7 @@ from auth import require_role
 from google import genai
 from google.genai import types
 
-@require_role(["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"])
+@require_role(["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Investigator", "Admin"])
 def show():
     """AI Assistant using Gemini API"""
     st.title("🤖 AI Assistant")

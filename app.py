@@ -18,6 +18,7 @@ import pages.closure_panel as closure_panel
 import pages.admin_panel as admin_panel
 import pages.user_management as user_management
 import pages.simple_ai_assistant as simple_ai_assistant
+import pages.investigation_panel as investigation_panel
 
 # Page configuration
 st.set_page_config(
@@ -91,7 +92,7 @@ def show_login():
             password = st.text_input("Password", type="password", placeholder="Enter your password")
             
             # Role selection dropdown
-            roles = ["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"]
+            roles = ["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Investigator", "Admin"]
             selected_role = st.selectbox("Login as Role", roles)
             
             col_a, col_b, col_c = st.columns([1, 1, 1])
@@ -137,11 +138,13 @@ def show_sidebar(role):
         menu_items.append("Legal Panel")
     elif role == "Actioner":
         menu_items.append("🔒 Actioner Panel")
+    elif role == "Investigator":
+        menu_items.extend(["Case Entry", "Reviewer Panel", "🔍 Investigation Panel"])
     elif role == "Admin":
-           menu_items.extend(["Case Entry", "AI Assistant", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Actioner Panel", "Admin Panel", "User Management"])
+           menu_items.extend(["Case Entry", "AI Assistant", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Actioner Panel", "🔍 Investigation Panel", "Admin Panel", "User Management"])
     
     # Add AI assistant for all roles except basic users
-    if role in ["Legal Reviewer", "Reviewer", "Approver", "Initiator", "Actioner"]:
+    if role in ["Legal Reviewer", "Reviewer", "Approver", "Initiator", "Actioner", "Investigator"]:
         menu_items.append("AI Assistant")
 
     
@@ -196,6 +199,8 @@ def show_main_content():
         legal_panel.show()
     elif page == "🔒 Actioner Panel":
         closure_panel.show()
+    elif page == "🔍 Investigation Panel":
+        investigation_panel.show()
     elif page == "Admin Panel":
         admin_panel.show()
     elif page == "User Management":

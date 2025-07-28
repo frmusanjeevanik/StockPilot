@@ -7,6 +7,10 @@ from auth import get_current_user, get_user_function, get_user_referred_by
 
 def show():
     """Display case entry page"""
+    # Check role access - Investigators and Initiators can create cases
+    from auth import require_role
+    require_role(["Initiator", "Investigator", "Admin"])
+    
     st.title("📄 Case Entry")
     
     current_user = get_current_user()

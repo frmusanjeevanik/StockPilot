@@ -3,7 +3,7 @@ from models import get_cases_by_status, get_case_by_id, update_case_status, get_
 from utils import get_status_color, format_datetime, format_file_size
 from auth import get_current_user, require_role
 
-@require_role(["Reviewer", "Admin"])
+@require_role(["Reviewer", "Investigator", "Admin"])
 def show():
     """Display reviewer panel"""
     st.title("🔍 Reviewer Panel")

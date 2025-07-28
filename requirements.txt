@@ -13,3 +13,5 @@ google-genai
 anthropic
 requests
 google-genai
+reportlab
+reportlab
