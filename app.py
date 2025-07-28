@@ -17,6 +17,7 @@ import pages.legal_panel as legal_panel
 import pages.closure_panel as closure_panel
 import pages.admin_panel as admin_panel
 import pages.user_management as user_management
+import pages.ai_legal_assistant as ai_legal_assistant
 
 # Page configuration
 st.set_page_config(
@@ -137,7 +138,11 @@ def show_sidebar(role):
     elif role == "Actioner":
         menu_items.append("🔒 Actioner Panel")
     elif role == "Admin":
-           menu_items.extend(["Case Entry", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Actioner Panel", "Admin Panel", "User Management"])
+           menu_items.extend(["Case Entry", "AI Legal Assistant", "Analytics", "Reviewer Panel", "Approver Panel", "Legal Panel", "🔒 Actioner Panel", "Admin Panel", "User Management"])
+    
+    # Add AI Legal Assistant for all roles except basic users
+    if role in ["Legal Reviewer", "Reviewer", "Approver", "Initiator", "Actioner"]:
+        menu_items.append("AI Legal Assistant")
 
     
     # Initialize selected page
@@ -195,6 +200,8 @@ def show_main_content():
         admin_panel.show()
     elif page == "User Management":
         user_management.show()
+    elif page == "AI Legal Assistant":
+        ai_legal_assistant.show()
     else:
         st.error("Page not found")
 

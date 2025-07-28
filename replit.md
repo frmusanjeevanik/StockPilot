@@ -55,6 +55,12 @@ Preferred communication style: Simple, everyday language.
   - Added Case ID and LAN columns to Cases Requiring Approval section
   - Cases Requiring Review section now shows actual submitted cases
   - Cases Requiring Approval section now shows actual cases under review
+- Integrated AI Legal Assistant powered by OpenAI GPT-4:
+  - Generate professional Show Cause Notices based on investigation findings
+  - Create comprehensive Reasoned Orders from investigation summaries
+  - Draft detailed Investigation Reports with proper structure
+  - Interactive chat assistant for legal guidance and fraud investigation advice
+  - Available to all user roles for enhanced document generation and legal support
 - Updated database schema to support all user master fields
 - Fixed LSP errors in user management and form validation
 
