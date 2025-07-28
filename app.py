@@ -41,10 +41,9 @@ def main():
         show_login()
         return
     
-    # Show AI tip popup after login (only once per session)
+    # Clear AI tip flag if it exists (removed tip display)
     if st.session_state.get("show_ai_tip", False):
-        st.info("**Tip:** Type your case summary. Click 'Enhance Description' to improve it using AI.")
-        st.session_state.show_ai_tip = False  # Clear flag so it only shows once
+        st.session_state.show_ai_tip = False  # Clear flag
     
     # Header with ABCL logo for authenticated users
     col1, col2, col3 = st.columns([1, 2, 1])
