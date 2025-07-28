@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import hashlib
+import plotly.express as px
 from database import get_db_connection, get_password_hash
 from models import get_audit_logs, get_case_statistics
 from utils import format_datetime
@@ -144,7 +145,6 @@ def show_system_statistics():
     with col1:
         st.subheader("Cases by Status")
         if stats["by_status"]:
-            import plotly.express as px
             fig = px.bar(
                 x=list(stats["by_status"].keys()),
                 y=list(stats["by_status"].values()),

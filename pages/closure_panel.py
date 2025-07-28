@@ -133,6 +133,10 @@ def show_closure_case_details(case, current_user):
             key=f"followup_{case['case_id']}"
         )
     
+    # Initialize follow-up variables
+    follow_up_date = None
+    follow_up_notes = ""
+    
     if follow_up_required:
         follow_up_date = st.date_input(
             "Follow-up Date",
