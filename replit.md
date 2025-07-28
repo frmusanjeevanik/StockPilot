@@ -62,11 +62,10 @@ Preferred communication style: Simple, everyday language.
   - Interactive chat assistant for investigation queries and compliance guidance
   - Removed OpenAI dependency due to quota limitations
 - Implemented AI-powered auto-suggestions/completion:
-  - Case description suggestions in Case Entry with "Get AI Suggestions" button
   - Quick remarks in all review stages (Review, Approval, Legal, Closure)
   - Predefined templates for common fraud scenarios and investigation findings
-  - Streamlined workflow with one-click template insertion
   - Context-aware suggestions based on case type and stage
+  - Separate AI Assistant page for comprehensive case analysis and document generation
 - Enhanced user experience with smart features:
   - Auto-completion for case descriptions and remarks
   - Consistent "AI Assistant" terminology throughout system

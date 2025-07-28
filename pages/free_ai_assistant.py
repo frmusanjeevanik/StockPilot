@@ -190,15 +190,16 @@ def case_analysis_tool(model_id):
                 result = query_huggingface_model(model_id, prompt, max_tokens=1200)
                 
                 st.subheader("Comprehensive Case Analysis")
-                st.text_area("", value=result, height=600, key="case_analysis_result")
-                
-                # Download option
-                st.download_button(
-                    label="Download Analysis Report",
-                    data=result,
-                    file_name=f"case_analysis_{case_type.lower().replace(' ', '_')}.txt",
-                    mime="text/plain"
-                )
+                st.text_area("Analysis Report Content", value=result, height=600, key="case_analysis_result")
+            
+        # Download option (outside form)
+        if st.session_state.get("case_analysis_result"):
+            st.download_button(
+                label="Download Analysis Report",
+                data=st.session_state.get("case_analysis_result", ""),
+                file_name=f"case_analysis_{case_type.lower().replace(' ', '_') if 'case_type' in locals() else 'report'}.txt",
+                mime="text/plain"
+            )
 
 def draft_notice_tool(model_id):
     """Draft Notice Tool"""
@@ -257,15 +258,16 @@ def draft_notice_tool(model_id):
                 result = query_huggingface_model(model_id, prompt, max_tokens=800)
                 
                 st.subheader(f"Generated {notice_type}")
-                st.text_area("", value=result, height=500, key="draft_notice_result")
-                
-                # Download option
-                st.download_button(
-                    label="Download Notice as Text File",
-                    data=result,
-                    file_name=f"{notice_type.lower().replace(' ', '_')}_{recipient or 'notice'}.txt",
-                    mime="text/plain"
-                )
+                st.text_area("Generated Notice Content", value=result, height=500, key="draft_notice_result")
+            
+        # Download option (outside form)
+        if st.session_state.get("draft_notice_result"):
+            st.download_button(
+                label="Download Notice as Text File",
+                data=st.session_state.get("draft_notice_result", ""),
+                file_name=f"{notice_type.lower().replace(' ', '_')}_{recipient or 'notice'}.txt",
+                mime="text/plain"
+            )
 
 def investigation_guide_tool(model_id):
     """Investigation Guide Tool"""
