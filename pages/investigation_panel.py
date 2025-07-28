@@ -519,7 +519,8 @@ def show_investigation_analytics():
             if status_data:
                 # Convert to list of tuples and create DataFrame
                 data_list = [(row[0], row[1]) for row in status_data]
-                status_df = pd.DataFrame(data_list, columns=['Status', 'Count'])
+                status_df = pd.DataFrame(data_list)
+                status_df.columns = ['Status', 'Count']
                 st.bar_chart(status_df.set_index('Status'))
         
         with col2:
@@ -532,7 +533,8 @@ def show_investigation_analytics():
                 }
                 if any(sum(v) for v in metrics_data.values()):
                     # Create DataFrame with proper structure
-                    metrics_df = pd.DataFrame.from_dict(metrics_data, orient='index', columns=['Verified', 'Failed'])
+                    metrics_df = pd.DataFrame.from_dict(metrics_data, orient='index')
+                    metrics_df.columns = ['Verified', 'Failed']
                     st.bar_chart(metrics_df.T)
     else:
         st.info("📊 No investigation data available yet")
