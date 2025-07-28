@@ -15,7 +15,11 @@ Preferred communication style: Simple, everyday language.
 - Implemented comprehensive User Master system with fields:
   - User ID, Password, Name, Team, Functional Designation, System Role, Referred By
   - Auto-fill "Referred By" in case entry based on user's stored referred_by value
-  - Added sample user: bg390458 (Rohit Vinayak Shirwadkar, Investigation Team, TL-FRMU Central Investigation)
+  - Bulk imported 29 users from master list including:
+    - Investigation team members (TLs, Managers, Executives)
+    - Process & Analytics team members 
+    - Regional and Location Investigation Managers
+    - All users have proper team assignments and referral mappings
 - Updated login system with User ID/password and role selection dropdown
 - Added TAT (Turn Around Time) metrics to dashboard:
   - Average TAT for Review, Approval, Legal Review, and Closure processes
