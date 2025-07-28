@@ -47,32 +47,29 @@ def show_case_management():
     else:
         current_user = {"username": "Unknown", "name": "Unknown", "team": "Investigation", "referred_by": "Unknown"}
     
-    # Two columns for case entry and case review
-    col1, col2 = st.columns([1, 1])
+    # Full width case entry form
+    st.markdown("#### 📝 Quick Case Entry")
+    st.info("💡 **Auto-fill feature:** If you select an existing case ID, demographic details will auto-populate from the Case Entry system.")
     
-    with col1:
-        st.markdown("#### 📝 Quick Case Entry")
-        st.info("💡 **Auto-fill feature:** If you select an existing case ID, demographic details will auto-populate from the Case Entry system.")
-        
-        with st.form("quick_case_entry"):
-            # Case ID input with auto-generation and auto-fetch functionality
-            col_a, col_b, col_c = st.columns([2, 1, 1])
-            with col_a:
+    with st.form("quick_case_entry"):
+        # Case ID input with auto-generation and auto-fetch functionality
+        col_a, col_b, col_c = st.columns([2, 1, 1])
+        with col_a:
                 # Auto-generate Case ID if creating new case
                 if "investigation_case_id" not in st.session_state:
                     st.session_state.investigation_case_id = generate_case_id()
                 case_id = st.text_input("Case ID *", value=st.session_state.investigation_case_id, help="Format: CASE20250728CE806A - Auto-generated or enter existing")
-            with col_b:
+        with col_b:
                 st.markdown("<br>", unsafe_allow_html=True)
                 auto_fill = st.form_submit_button("🔍 Fetch Details")
-            with col_c:
+        with col_c:
                 st.markdown("<br>", unsafe_allow_html=True)
                 if st.form_submit_button("🔄 New ID"):
                     st.session_state.investigation_case_id = generate_case_id()
                     st.rerun()
-            
-            # Initialize default values
-            default_values = {
+        
+        # Initialize default values
+        default_values = {
                 "lan": "",
                 "customer_name": "",
                 "customer_mobile": "",
@@ -88,10 +85,10 @@ def show_case_management():
                 "case_date": "",
                 "disbursement_date": "",
                 "customer_dob": ""
-            }
-            
-            # Check for auto-fill data or handle auto-fill button click
-            if auto_fill and case_id.strip():
+        }
+        
+        # Check for auto-fill data or handle auto-fill button click
+        if auto_fill and case_id.strip():
                 # Fetch case details from database
                 case_data = get_case_by_id(case_id.strip())
                 if case_data:
@@ -115,52 +112,52 @@ def show_case_management():
                     })
                 else:
                     st.warning(f"⚠️ Case ID '{case_id}' not found in system")
-            elif "autofill_data" in st.session_state and st.session_state.autofill_case_id == case_id:
+        elif "autofill_data" in st.session_state and st.session_state.autofill_case_id == case_id:
                 # Use existing session data
                 auto_data = st.session_state.autofill_data
                 default_values.update(auto_data)
-            
-            # Display all fetched/auto-filled fields
-            st.markdown("#### 📋 Case Details")
-            col1, col2, col3 = st.columns(3)
-            with col1:
+        
+        # Display all fetched/auto-filled fields
+        st.markdown("#### 📋 Case Details")
+        col1, col2, col3 = st.columns(3)
+        with col1:
                 lan = st.text_input("LAN *", value=default_values["lan"])
                 case_type = st.text_input("Case Type", value=default_values["case_type"])
-            with col2:
+        with col2:
                 product = st.text_input("Product", value=default_values["product"])
                 region = st.text_input("Region", value=default_values["region"])
-            with col3:
+        with col3:
                 referred_by = st.text_input("Referred By", value=default_values["referred_by"])
                 case_date = st.text_input("Case Date", value=default_values["case_date"])
-            
-            st.markdown("#### 👤 Customer Demographics")
-            col1, col2, col3 = st.columns(3)
-            with col1:
+        
+        st.markdown("#### 👤 Customer Demographics")
+        col1, col2, col3 = st.columns(3)
+        with col1:
                 customer_name = st.text_input("Customer Name *", value=default_values["customer_name"])
                 customer_pan = st.text_input("PAN", value=default_values["customer_pan"])
-            with col2:
+        with col2:
                 customer_mobile = st.text_input("Mobile Number *", value=default_values["customer_mobile"])
                 customer_dob = st.text_input("Date of Birth", value=default_values["customer_dob"])
-            with col3:
+        with col3:
                 customer_email = st.text_input("Email ID", value=default_values["customer_email"])
-            
-            st.markdown("#### 🏦 Loan Details")
-            col1, col2 = st.columns(2)
-            with col1:
+        
+        st.markdown("#### 🏦 Loan Details")
+        col1, col2 = st.columns(2)
+        with col1:
                 loan_amount = st.text_input("Loan Amount", value=default_values["loan_amount"])
-            with col2:
+        with col2:
                 branch_location = st.text_input("Branch/Location", value=default_values["branch_location"])
                 disbursement_date = st.text_input("Disbursement Date", value=default_values["disbursement_date"])
-            
-            case_description = st.text_area("Case Description *", value=default_values["case_description"], height=100)
-            
-            case_type = st.selectbox("Case Type *", ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"], 
+        
+        case_description = st.text_area("Case Description *", value=default_values["case_description"], height=100)
+        
+        case_type = st.selectbox("Case Type *", ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"], 
                                    index=0 if not default_values["case_type"] else ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"].index(default_values["case_type"]) if default_values["case_type"] in ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"] else 0)
-            
-            st.markdown("---")
-            col_submit1, col_submit2 = st.columns(2)
-            
-            with col_submit1:
+        
+        st.markdown("---")
+        col_submit1, col_submit2 = st.columns(2)
+        
+        with col_submit1:
                 if st.form_submit_button("💾 Save as Draft", use_container_width=True):
                     if case_id and lan and case_description:
                         # Create comprehensive case data with all demographic details
@@ -197,8 +194,8 @@ def show_case_management():
                             st.error(f"❌ Error saving case: {message}")
                     else:
                         st.error("❌ Please fill all required fields (Case ID, LAN, Customer Name, Mobile, Description)")
-            
-            with col_submit2:
+        
+        with col_submit2:
                 if st.form_submit_button("🚀 Submit for Review", use_container_width=True):
                     if case_id and lan and customer_name and customer_mobile and case_description:
                         # Create comprehensive case data with all demographic details
@@ -239,43 +236,44 @@ def show_case_management():
                 else:
                     st.error("❌ Please fill all required fields")
     
-    with col2:
-        st.markdown("#### 📂 Cases for Investigation")
+    # Cases for Investigation section - moved below case entry for full width
+    st.divider()
+    st.markdown("#### 📂 Cases for Investigation")
+    
+    # Get cases under investigation
+    investigation_cases = []
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT case_id, lan, case_type, case_description, created_at, status
+            FROM cases 
+            WHERE status IN ('Submitted', 'Under Review', 'Under Investigation')
+            ORDER BY created_at DESC
+            LIMIT 10
+        """)
+        investigation_cases = cursor.fetchall()
+    
+    if investigation_cases:
+        # Case selection via selectbox instead of buttons
+        case_options = [f"{case['case_id']} - {case['case_type']}" for case in investigation_cases]
+        selected_case_option = st.selectbox("Select a case to investigate:", [""] + case_options)
         
-        # Get cases under investigation
-        investigation_cases = []
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT case_id, lan, case_type, case_description, created_at, status
-                FROM cases 
-                WHERE status IN ('Submitted', 'Under Review', 'Under Investigation')
-                ORDER BY created_at DESC
-                LIMIT 10
-            """)
-            investigation_cases = cursor.fetchall()
-        
-        if investigation_cases:
-            # Case selection via selectbox instead of buttons
-            case_options = [f"{case['case_id']} - {case['case_type']}" for case in investigation_cases]
-            selected_case_option = st.selectbox("Select a case to investigate:", [""] + case_options)
+        if selected_case_option:
+            selected_case_id = selected_case_option.split(" - ")[0]
+            st.session_state.selected_case_for_investigation = selected_case_id
             
-            if selected_case_option:
-                selected_case_id = selected_case_option.split(" - ")[0]
-                st.session_state.selected_case_for_investigation = selected_case_id
+            # Show selected case details
+            selected_case = next(case for case in investigation_cases if case['case_id'] == selected_case_id)
+            with st.expander(f"📋 Selected Case Details", expanded=True):
+                st.markdown(f"**Case ID:** {selected_case['case_id']}")
+                st.markdown(f"**LAN:** {selected_case['lan']}")
+                st.markdown(f"**Type:** {selected_case['case_type']}")
+                st.markdown(f"**Status:** {selected_case['status']}")
+                st.markdown(f"**Description:** {selected_case['case_description']}")
                 
-                # Show selected case details
-                selected_case = next(case for case in investigation_cases if case['case_id'] == selected_case_id)
-                with st.expander(f"📋 Selected Case Details", expanded=True):
-                    st.markdown(f"**Case ID:** {selected_case['case_id']}")
-                    st.markdown(f"**LAN:** {selected_case['lan']}")
-                    st.markdown(f"**Type:** {selected_case['case_type']}")
-                    st.markdown(f"**Status:** {selected_case['status']}")
-                    st.markdown(f"**Description:** {selected_case['case_description']}")
-                    
-                st.info("✅ Case selected for investigation. Switch to 'Investigation Details' tab to continue.")
-        else:
-            st.info("📭 No cases available for investigation")
+            st.info("✅ Case selected for investigation. Switch to 'Investigation Details' tab to continue.")
+    else:
+        st.info("📭 No cases available for investigation")
 
 def show_investigation_details():
     """Show detailed investigation form"""
