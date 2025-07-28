@@ -1,6 +1,6 @@
 import streamlit as st
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from models import create_case
 from utils import validate_case_data, save_uploaded_file, get_dropdown_options
 from auth import get_current_user
@@ -19,7 +19,7 @@ def show():
         if "auto_case_id" not in st.session_state:
             st.session_state.auto_case_id = f"CASE{datetime.now().strftime('%Y%m%d')}{uuid.uuid4().hex[:6].upper()}"
         
-        # Basic Case Information
+        # All fields in rows
         case_id = st.text_input("Case ID *", value=st.session_state.auto_case_id, disabled=True, help="Auto-generated unique case ID")
         
         col1, col2, col3 = st.columns(3)
@@ -38,11 +38,7 @@ def show():
         with col3:
             case_date = st.date_input("Case Date *", datetime.today())
         
-        col1, col2 = st.columns(2)
-        with col1:
-            case_source = st.selectbox("Source of Case *", options["case_sources"])
-        with col2:
-            status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
+        status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
         # Case description
         case_description = st.text_area(
@@ -50,47 +46,6 @@ def show():
             placeholder="Provide detailed description of the case",
             height=120
         )
-        
-        # Demographic Details Section
-        st.subheader("Customer Demographics")
-        st.info("ℹ️ Auto-fetch functionality will be available in future releases")
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            customer_name = st.text_input("Customer Name", placeholder="Auto-fetch available in future")
-            customer_dob = st.date_input("Date of Birth", value=None, help="Auto-fetch available in future")
-            customer_pan = st.text_input("PAN", placeholder="Auto-fetch available in future")
-        with col2:
-            customer_mobile = st.text_input("Mobile Number", placeholder="Auto-fetch available in future")
-            customer_email = st.text_input("Email ID", placeholder="Auto-fetch available in future")
-            branch_location = st.text_input("Branch / Location", placeholder="Auto-fetch available in future")
-        with col3:
-            customer_type = st.selectbox("Customer Type", options["customer_types"])
-            kyc_status = st.selectbox("KYC Status", options["kyc_status"])
-            risk_category = st.selectbox("Risk Category", options["risk_categories"], help="Applicable for risk assessment")
-        
-        # Address
-        customer_address = st.text_area("Customer Address", placeholder="Auto-fetch available in future", height=80)
-        
-        # Loan Details Section
-        st.subheader("Loan Information")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            loan_amount = st.number_input("Loan Amount (₹)", min_value=0.0, format="%.2f", help="Auto-fetch available in future")
-            disbursement_date = st.date_input("Disbursement Date", value=None, help="Auto-fetch available in future")
-        with col2:
-            repayment_status = st.selectbox("Repayment Status", [""] + options["repayment_status"], help="Auto-fetch available in future")
-            linked_accounts = st.text_input("Linked Loan Accounts", placeholder="Auto-fetch available in future")
-        
-        # SLA Information (Auto-calculated)
-        st.subheader("SLA Tracking")
-        col1, col2 = st.columns(2)
-        with col1:
-            fmr1_due = case_date + timedelta(days=14) if case_date else datetime.now().date() + timedelta(days=14)
-            st.text_input("FMR-1 Due Date", value=fmr1_due.strftime("%Y-%m-%d"), disabled=True, help="Auto-calculated: Case Date + 14 days")
-        with col2:
-            document_retention = case_date + timedelta(days=1825) if case_date else datetime.now().date() + timedelta(days=1825) # 5 years
-            st.text_input("Document Retention Until", value=document_retention.strftime("%Y-%m-%d"), disabled=True, help="Auto-calculated: Case Date + 5 years")
         
         # File upload
         st.subheader("Supporting Documents")
@@ -111,10 +66,6 @@ def show():
         
         # Handle form submission
         if save_draft or submit_final:
-            # Calculate SLA dates
-            fmr1_due = case_date + timedelta(days=14) if case_date else None
-            document_retention = case_date + timedelta(days=1825) if case_date else None  # 5 years
-            
             case_data = {
                 "case_id": st.session_state.auto_case_id,
                 "lan": lan.strip(),
@@ -122,25 +73,6 @@ def show():
                 "product": product,
                 "region": region,
                 "referred_by": referred_by,
-                "case_source": case_source,
-                # Demographics
-                "customer_name": customer_name.strip() if customer_name else "",
-                "customer_dob": customer_dob,
-                "customer_pan": customer_pan.strip() if customer_pan else "",
-                "customer_address": customer_address.strip() if customer_address else "",
-                "customer_mobile": customer_mobile.strip() if customer_mobile else "",
-                "customer_email": customer_email.strip() if customer_email else "",
-                "branch_location": branch_location.strip() if branch_location else "",
-                "loan_amount": loan_amount if loan_amount > 0 else None,
-                "disbursement_date": disbursement_date,
-                "repayment_status": repayment_status if repayment_status else "",
-                "linked_loan_accounts": linked_accounts.strip() if linked_accounts else "",
-                "customer_type": customer_type,
-                "kyc_status": kyc_status,
-                "risk_category": risk_category,
-                # SLA tracking
-                "fmr1_due_date": fmr1_due,
-                "document_retention_date": document_retention,
                 "case_description": case_description.strip(),
                 "case_date": case_date.strftime("%Y-%m-%d"),
                 "status": "Submitted" if submit_final else "Draft"

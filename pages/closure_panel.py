@@ -143,6 +143,9 @@ def show_closure_case_details(case, current_user):
             "Follow-up Notes",
             key=f"followup_notes_{case['case_id']}"
         )
+    else:
+        follow_up_date = None
+        follow_up_notes = ""
     
     # Closure buttons
     col1, col2, col3 = st.columns(3)

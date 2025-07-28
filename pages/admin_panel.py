@@ -156,6 +156,7 @@ def show_system_statistics():
     with col2:
         st.subheader("Cases by Region")
         if stats["by_region"]:
+            import plotly.express as px
             fig = px.pie(
                 values=list(stats["by_region"].values()),
                 names=list(stats["by_region"].keys()),
