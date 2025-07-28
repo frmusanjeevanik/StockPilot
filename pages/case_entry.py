@@ -24,13 +24,7 @@ def query_gemini(prompt, max_tokens=1000):
             contents=prompt,
             config=types.GenerateContentConfig(
                 max_output_tokens=max_tokens,
-                temperature=0.3,
-                safety_settings={
-                    'HARM_CATEGORY_HARASSMENT': 'BLOCK_NONE',
-                    'HARM_CATEGORY_HATE_SPEECH': 'BLOCK_NONE',
-                    'HARM_CATEGORY_SEXUALLY_EXPLICIT': 'BLOCK_NONE',
-                    'HARM_CATEGORY_DANGEROUS_CONTENT': 'BLOCK_NONE'
-                }
+                temperature=0.3
             )
         )
         
