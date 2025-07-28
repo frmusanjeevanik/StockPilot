@@ -13,12 +13,21 @@ def authenticate_user(username, password, selected_role=None):
             # Check if user can login with selected role
             user_assigned_role = user["role"]  # Get user's assigned role from database
             
-            # Restrict login to assigned role only
+            # Check role access permissions
+            user_has_all_roles_access = user.get("all_roles_access", False)
+            
             if selected_role and user_assigned_role != selected_role:
-                # Special case: Admin can access any role, but non-admins cannot access Admin
-                if selected_role == "Admin" and user_assigned_role != "Admin":
+                # Admin users can access any role
+                if user_assigned_role == "Admin":
+                    pass  # Admin can access any role
+                # Users with all_roles_access can access any role except Admin
+                elif user_has_all_roles_access and selected_role != "Admin":
+                    pass  # User has permission for all roles except Admin
+                # Non-admin users cannot access Admin role
+                elif selected_role == "Admin" and user_assigned_role != "Admin":
                     return False, "Access denied. You are not authorized for Admin role."
-                elif user_assigned_role != "Admin" and selected_role != user_assigned_role:
+                # Users without all_roles_access are restricted to their assigned role
+                elif not user_has_all_roles_access:
                     return False, f"Access denied. You can only login as '{user_assigned_role}' role."
             
             # Use selected role if provided and authorized, otherwise use user's default role

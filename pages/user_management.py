@@ -34,12 +34,13 @@ def show_users_list():
         # Display users in a table format
         user_data = []
         for user in users:
+            access_level = "All Roles" if user.get("all_roles_access") else user["role"]
             user_data.append({
                 "User ID": user["username"],
                 "Name": user["name"] or "N/A",
                 "Team": user["team"] or "N/A",
                 "Functional Designation": user["functional_designation"] or "N/A",
-                "System Role": user["role"],
+                "Access Level": access_level,
                 "Referred By": user["referred_by"] or "N/A",
                 "Email": user["email"] or "N/A",
                 "Status": "Active" if user["is_active"] else "Inactive",
@@ -106,6 +107,8 @@ def show_add_user():
             ])
             email = st.text_input("Email", placeholder="Enter email address")
             is_active = st.checkbox("Active User", value=True)
+            all_roles_access = st.checkbox("Grant All Roles Access", 
+                                         help="Allow user to login as any role except Admin")
         
         submit_button = st.form_submit_button("➕ Add User", use_container_width=True)
         
@@ -152,7 +155,8 @@ def show_add_user():
                     'team': team.strip(),
                     'functional_designation': functional_designation.strip(),
                     'referred_by': referred_by,
-                    'is_active': is_active
+                    'is_active': is_active,
+                    'all_roles_access': all_roles_access
                 }
                 success, message = create_user(user_data)
                 
@@ -219,6 +223,12 @@ def show_edit_user():
                 
                 # Password reset option
                 reset_password = st.checkbox("Reset Password")
+                
+                # Role assignment option for admin
+                st.markdown("**Role Assignment:**")
+                all_roles_access = st.checkbox("Grant All Roles Access", 
+                                             value=selected_user.get('all_roles_access', False),
+                                             help="Allow user to login as any role except Admin")
                 new_password = ""
                 confirm_new_password = ""
                 if reset_password:
@@ -263,7 +273,8 @@ def show_edit_user():
                         'team': new_team.strip() if new_team else None,
                         'functional_designation': new_functional_designation.strip() if new_functional_designation else None,
                         'referred_by': new_referred_by,
-                        'is_active': new_is_active
+                        'is_active': new_is_active,
+                        'all_roles_access': all_roles_access
                     }
                     
                     if reset_password:
@@ -309,8 +320,8 @@ def create_user(user_data):
             # Insert user
             cursor.execute('''
                 INSERT INTO users (username, password_hash, role, email, name, team, 
-                                 functional_designation, referred_by, is_active)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                 functional_designation, referred_by, is_active, all_roles_access)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 user_data['username'], 
                 password_hash, 
@@ -320,7 +331,8 @@ def create_user(user_data):
                 user_data['team'],
                 user_data['functional_designation'],
                 user_data['referred_by'],
-                user_data['is_active']
+                user_data['is_active'],
+                user_data['all_roles_access']
             ))
             
             conn.commit()
@@ -366,6 +378,10 @@ def update_user(username, update_data):
             if 'is_active' in update_data:
                 set_clauses.append("is_active = ?")
                 values.append(update_data['is_active'])
+            
+            if 'all_roles_access' in update_data:
+                set_clauses.append("all_roles_access = ?")
+                values.append(update_data['all_roles_access'])
             
             if 'password' in update_data:
                 set_clauses.append("password_hash = ?")

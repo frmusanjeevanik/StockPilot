@@ -161,6 +161,11 @@ def init_database():
         except sqlite3.OperationalError:
             pass  # Column already exists
         
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN all_roles_access BOOLEAN DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
         conn.commit()
         
         # Clean up old test users first

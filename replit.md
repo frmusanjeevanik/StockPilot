@@ -22,9 +22,17 @@ Preferred communication style: Simple, everyday language.
     - All users have proper team assignments and referral mappings
 - Updated login system to use User ID/password authentication only:
   - Removed old username/password system completely
-  - Users can only login with their assigned role (strict role-based restriction)
+  - Implemented flexible role-based access control:
+    - Users can login with assigned role only (default behavior)
+    - Admin can assign "All Roles Access" to specific users
+    - Users with all roles access can login as any role except Admin
+    - Admin role access remains restricted to Admin users only
   - Clear error messages for unauthorized role access attempts
   - Removed old test users (initiator, reviewer, approver, etc.)
+- Enhanced Admin functionality:
+  - Admin can now assign/revoke "All Roles Access" to users
+  - User management shows access level (specific role vs "All Roles")
+  - Granted all roles access to 12 specified users for testing flexibility
 - Removed "Address" field from all sections throughout the system
 - Added TAT (Turn Around Time) metrics to dashboard:
   - Average TAT for Review, Approval, Legal Review, and Closure processes
