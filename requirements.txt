@@ -12,3 +12,4 @@ openai
 google-genai
 anthropic
 requests
+google-genai

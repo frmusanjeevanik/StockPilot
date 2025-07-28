@@ -1,0 +1,88 @@
+Create a new user role called "Investigator" in the system.
+
+This role should have access to all the fields available to both the "Case Entry" and "Reviewer" roles.
+
+Additionally, the Investigator role should include a dedicated section for entering investigation details.
+
+The Investigator should also be able to generate a detailed PDF report in the following format:
+
+Investigation Report on Actual or Suspected Frauds
+(Vide Chapter IV)
+
+PART A: FRAUD REPORT
+
+Name of NBFC
+[Insert NBFC Name]
+
+Fraud Number
+[Insert Unique Fraud ID]
+
+Details of the Branch
+a. Name of the Branch: [Insert Branch Name]
+b. Branch Type: [Branch Office / Regional Office / etc.]
+c. Place: [Insert City]
+d. District: [Insert District]
+e. State: [Insert State]
+
+Name of Principal Party / Account
+[Redacted]
+
+Area of Operations where fraud occurred
+a. [Insert Business Segment]
+b. Fraud in borrower’s account: [Yes/No]
+
+Nature of Fraud
+a. [Cheating / Forgery / Identity Theft / etc.]
+b. Use of computer: [Yes/No]
+
+Total Amount Involved
+[Insert Amount]
+
+Timeline
+a. Date of Occurrence: [DD-MMM-YYYY]
+b. Date of Detection: [DD-MMM-YYYY]
+c. Delay in Detection: [If any, explain]
+d. Date Reported to RBI: [DD-MMM-YYYY]
+e. Delay in Reporting to RBI: [If any, explain]
+
+Brief History
+[Summarize how the fraud was discovered, initial findings, and background]
+
+Loan Account Details
+Application No.: [Insert]
+LAN No.: [Insert]
+Product: [Insert Product Type]
+Sanction Amount: [Insert Amount]
+Sanction Date: [Insert Date]
+Outstanding Balance: [Insert Amount]
+Loan Status: [Active/Closed/Delinquent]
+
+Investigation Findings
+Document Verification (PAN, Aadhaar, Bank Statement)
+Address and Employment Verification
+Mobile Number Verification
+CIBIL and Form 26AS Review
+Modus Operandi Summary
+
+Root Cause Analysis
+[Summarize key lapses or manipulation techniques]
+
+Recommended Actions
+Business Team: [Action]
+RCU or Credit: [Action]
+ORM or Policy: [Action]
+Compliance: [Action]
+IT: [Action]
+Collections: [Action]
+Legal: [Action]
+
+Annexures
+Annexure 1: [Fabricated Documents]
+Annexure 2: [Site Visit Reports]
+Annexure 3: [Statement of Account]
+
+PART B: Additional Information (for frauds ₹5 lakh and above)
+Principal Party Details
+Borrower Account Summary
+Associate Concerns (if any)
+Director or Proprietor Details

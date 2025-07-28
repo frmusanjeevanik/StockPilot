@@ -1,27 +1,40 @@
 import streamlit as st
+import os
 from auth import require_role
+from google import genai
+from google.genai import types
 
 @require_role(["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Admin"])
 def show():
-    """Simple AI Assistant using predefined templates"""
+    """AI Assistant using Gemini API"""
     st.title("🤖 AI Assistant")
-    st.markdown("**Template-based assistant for case analysis and document drafting**")
+    st.markdown("**Intelligent assistant for case analysis and document drafting powered by Gemini AI**")
+    
+    # Initialize Gemini client
+    if not hasattr(st.session_state, 'gemini_client'):
+        try:
+            os.environ['GEMINI_API_KEY'] = 'AIzaSyAZCvpTcGq-ie_3Vnh2obVaAzrFTnFnDqc'
+            st.session_state.gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+            st.success("✅ AI Assistant ready with Gemini intelligence")
+        except Exception as e:
+            st.error(f"❌ Error initializing AI: {str(e)}")
+            return
     
     # Quick Action Buttons
     st.subheader("Available Tools")
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("📋 Case Analysis Templates", use_container_width=True):
-            st.session_state.ai_tool = "case_analysis"
+        if st.button("📋 Smart Case Analysis", use_container_width=True):
+            st.session_state.ai_tool = "smart_case_analysis"
     
     with col2:
-        if st.button("📝 Document Templates", use_container_width=True):
-            st.session_state.ai_tool = "document_templates"
+        if st.button("📝 AI Document Generator", use_container_width=True):
+            st.session_state.ai_tool = "ai_document_generator"
     
     with col3:
-        if st.button("🔍 Investigation Guidelines", use_container_width=True):
-            st.session_state.ai_tool = "investigation_guide"
+        if st.button("💬 AI Chat Assistant", use_container_width=True):
+            st.session_state.ai_tool = "ai_chat"
     
     st.divider()
     
@@ -29,33 +42,97 @@ def show():
     if "ai_tool" in st.session_state:
         tool = st.session_state.ai_tool
         
-        if tool == "case_analysis":
-            show_case_analysis_templates()
-        elif tool == "document_templates":
-            show_document_templates()
-        elif tool == "investigation_guide":
-            show_investigation_guidelines()
+        if tool == "smart_case_analysis":
+            show_smart_case_analysis()
+        elif tool == "ai_document_generator":
+            show_ai_document_generator()
+        elif tool == "ai_chat":
+            show_ai_chat_assistant()
     else:
         # Default view
-        st.subheader("Template-Based AI Assistant")
+        st.subheader("Gemini-Powered AI Assistant")
         st.markdown("""
-        **Available Tools:**
+        **Available AI Tools:**
         
-        1. **Case Analysis Templates**: Pre-built analysis frameworks for different case types
-        2. **Document Templates**: Professional templates for notices, reports, and communications
-        3. **Investigation Guidelines**: Step-by-step investigation procedures and checklists
+        1. **Smart Case Analysis**: AI-powered analysis of case details with intelligent insights
+        2. **AI Document Generator**: Generate professional documents with AI assistance
+        3. **AI Chat Assistant**: Interactive chat for investigation guidance and compliance questions
         
-        **Note**: This assistant uses predefined professional templates - no external API required.
+        **Note**: Powered by Google Gemini AI for intelligent, context-aware assistance.
         """)
 
-def show_case_analysis_templates():
-    """Show case analysis templates"""
-    st.subheader("📋 Case Analysis Templates")
+def query_gemini(prompt, max_tokens=1000):
+    """Query Gemini API for intelligent responses"""
+    try:
+        client = st.session_state.gemini_client
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                max_output_tokens=max_tokens,
+                temperature=0.3
+            )
+        )
+        return response.text if response.text else "Unable to generate response"
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+def show_smart_case_analysis():
+    """AI-powered case analysis"""
+    st.subheader("📋 Smart Case Analysis")
     
-    case_type = st.selectbox(
-        "Select Case Type",
-        ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"]
-    )
+    with st.form("case_analysis_form"):
+        case_type = st.selectbox(
+            "Case Type",
+            ["Document Fraud", "Identity Fraud", "Financial Fraud", "Compliance Violation", "Operational Risk"]
+        )
+        
+        case_details = st.text_area(
+            "Case Details",
+            placeholder="Describe the case details, evidence, and specific concerns...",
+            height=150
+        )
+        
+        specific_questions = st.text_area(
+            "Specific Questions (Optional)",
+            placeholder="Any specific questions or areas you want the AI to focus on...",
+            height=100
+        )
+        
+        submit_analysis = st.form_submit_button("🔍 Analyze Case", use_container_width=True)
+    
+    if submit_analysis and case_details:
+        with st.spinner("Analyzing case with AI..."):
+            prompt = f"""
+            You are an expert fraud investigation analyst. Analyze the following case and provide a comprehensive analysis.
+            
+            Case Type: {case_type}
+            Case Details: {case_details}
+            Specific Questions: {specific_questions if specific_questions else "None"}
+            
+            Please provide:
+            1. Risk Assessment (High/Medium/Low with reasoning)
+            2. Key Red Flags identified
+            3. Investigation priorities and next steps
+            4. Recommended actions
+            5. Potential legal/regulatory implications
+            6. Evidence preservation requirements
+            
+            Format the response professionally with clear sections and actionable recommendations.
+            """
+            
+            analysis = query_gemini(prompt, max_tokens=1500)
+            
+            st.subheader("AI Case Analysis Report")
+            st.text_area("Analysis Report", value=analysis, height=600)
+            
+            # Download option
+            st.download_button(
+                label="Download Analysis Report",
+                data=analysis,
+                file_name=f"{case_type.lower().replace(' ', '_')}_analysis_{st.session_state.get('current_user', {}).get('user_id', 'report')}.txt",
+                mime="text/plain"
+            )
     
     templates = {
         "Document Fraud": """
@@ -224,14 +301,74 @@ def show_case_analysis_templates():
             mime="text/plain"
         )
 
-def show_document_templates():
-    """Show document templates"""
-    st.subheader("📝 Document Templates")
+def show_ai_document_generator():
+    """AI-powered document generation"""
+    st.subheader("📝 AI Document Generator")
     
-    doc_type = st.selectbox(
-        "Select Document Type",
-        ["Show Cause Notice", "Investigation Report", "Legal Notice", "Recovery Notice", "Compliance Report"]
-    )
+    with st.form("document_generator_form"):
+        doc_type = st.selectbox(
+            "Document Type",
+            ["Show Cause Notice", "Investigation Report", "Legal Notice", "Recovery Notice", "Compliance Report", "Email Communication", "Internal Memo"]
+        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            recipient_name = st.text_input("Recipient Name")
+            case_id = st.text_input("Case ID/LAN")
+        with col2:
+            loan_amount = st.text_input("Loan Amount (if applicable)")
+            branch_location = st.text_input("Branch/Location")
+        
+        case_summary = st.text_area(
+            "Case Summary/Key Details",
+            placeholder="Provide key details about the case, violations, or issues...",
+            height=150
+        )
+        
+        specific_requirements = st.text_area(
+            "Specific Requirements",
+            placeholder="Any specific points to include, tone required, or special instructions...",
+            height=100
+        )
+        
+        submit_document = st.form_submit_button("📝 Generate Document", use_container_width=True)
+    
+    if submit_document and recipient_name and case_summary:
+        with st.spinner("Generating document with AI..."):
+            prompt = f"""
+            You are a professional legal document writer for a financial institution. Generate a {doc_type} with the following details:
+            
+            Recipient: {recipient_name}
+            Case ID/LAN: {case_id}
+            Loan Amount: {loan_amount}
+            Branch: {branch_location}
+            Case Summary: {case_summary}
+            Special Requirements: {specific_requirements if specific_requirements else "Standard format"}
+            
+            Requirements:
+            1. Use professional, formal language appropriate for banking/legal context
+            2. Include proper letterhead format (placeholder for bank details)
+            3. Follow legal and regulatory compliance standards
+            4. Include all necessary legal disclaimers and rights
+            5. Structure with clear sections and professional formatting
+            6. Include proper contact information and next steps
+            7. Use appropriate tone - firm but professional
+            
+            Generate a complete, ready-to-use document.
+            """
+            
+            document = query_gemini(prompt, max_tokens=2000)
+            
+            st.subheader(f"Generated {doc_type}")
+            st.text_area("Generated Document", value=document, height=600)
+            
+            # Download option
+            st.download_button(
+                label="Download Document",
+                data=document,
+                file_name=f"{doc_type.lower().replace(' ', '_')}_{recipient_name.replace(' ', '_')}_{case_id}.txt",
+                mime="text/plain"
+            )
     
     templates = {
         "Show Cause Notice": """
@@ -491,269 +628,111 @@ Date: [Date]
             mime="text/plain"
         )
 
-def show_investigation_guidelines():
-    """Show investigation guidelines"""
-    st.subheader("🔍 Investigation Guidelines")
+def show_ai_chat_assistant():
+    """Interactive AI chat assistant"""
+    st.subheader("💬 AI Chat Assistant")
     
-    guideline_type = st.selectbox(
-        "Select Guideline Type",
-        ["Document Fraud Investigation", "Field Investigation", "Digital Evidence", "Interview Process", "Evidence Preservation"]
-    )
+    # Initialize chat history
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
     
-    guidelines = {
-        "Document Fraud Investigation": """
-DOCUMENT FRAUD INVESTIGATION GUIDELINES
-
-1. INITIAL ASSESSMENT
-   □ Obtain original documents
-   □ Identify type of fraud suspected
-   □ Assess urgency and risk level
-   □ Assign investigation team
-
-2. DOCUMENT EXAMINATION
-   □ Physical inspection for alterations
-   □ Check paper quality and watermarks
-   □ Verify security features
-   □ Look for digital manipulation signs
-   □ Compare with known genuine samples
-
-3. TECHNICAL ANALYSIS
-   □ UV light examination
-   □ Magnification analysis
-   □ Digital forensics if applicable
-   □ Handwriting analysis
-   □ Ink analysis
-
-4. VERIFICATION PROCESS
-   □ Contact issuing authority
-   □ Cross-check with databases
-   □ Verify with third parties
-   □ Check sequential numbering
-   □ Validate dates and timelines
-
-5. EVIDENCE COLLECTION
-   □ Photograph all documents
-   □ Maintain chain of custody
-   □ Preserve original condition
-   □ Document all findings
-   □ Secure expert opinions
-
-6. REPORTING
-   □ Prepare detailed findings
-   □ Include photographic evidence
-   □ Provide expert opinions
-   □ Recommend actions
-   □ Submit to legal team
-        """,
-        
-        "Field Investigation": """
-FIELD INVESTIGATION GUIDELINES
-
-1. PRE-INVESTIGATION PLANNING
-   □ Review case details thoroughly
-   □ Prepare investigation checklist
-   □ Gather contact information
-   □ Plan route and schedule
-   □ Carry identification documents
-
-2. RESIDENTIAL VERIFICATION
-   □ Verify physical address
-   □ Check name plate/house number
-   □ Interview neighbors
-   □ Assess living standards
-   □ Take photographs
-   □ Verify utilities connection
-
-3. EMPLOYMENT VERIFICATION
-   □ Visit registered office
-   □ Meet HR/Admin personnel
-   □ Verify employment details
-   □ Check salary structure
-   □ Confirm designation
-   □ Assess business authenticity
-
-4. BUSINESS VERIFICATION
-   □ Check business premises
-   □ Verify registration documents
-   □ Interview business associates
-   □ Assess business operations
-   □ Check financial health
-   □ Verify GST registration
-
-5. INTERVIEW TECHNIQUES
-   □ Be professional and courteous
-   □ Ask open-ended questions
-   □ Verify facts consistently
-   □ Note behavioral patterns
-   □ Record responses accurately
-   □ Maintain confidentiality
-
-6. DOCUMENTATION
-   □ Complete investigation report
-   □ Include photographic evidence
-   □ Attach supporting documents
-   □ Note GPS coordinates
-   □ Record time and date
-   □ Get verification signatures
-        """,
-        
-        "Digital Evidence": """
-DIGITAL EVIDENCE GUIDELINES
-
-1. DIGITAL DOCUMENT ANALYSIS
-   □ Check metadata properties
-   □ Verify creation/modification dates
-   □ Look for digital signatures
-   □ Analyze file compression
-   □ Check for layers in PDFs
-
-2. IMAGE FORENSICS
-   □ Examine EXIF data
-   □ Look for digital manipulation
-   □ Check consistency in lighting
-   □ Verify shadows and reflections
-   □ Use reverse image search
-
-3. EMAIL INVESTIGATION
-   □ Verify sender authentication
-   □ Check email headers
-   □ Trace IP addresses
-   □ Verify timestamps
-   □ Check for spoofing
-
-4. DATABASE VERIFICATION
-   □ Cross-check with internal systems
-   □ Verify with external databases
-   □ Check data consistency
-   □ Look for duplicate entries
-   □ Verify data sources
-
-5. EVIDENCE PRESERVATION
-   □ Create forensic copies
-   □ Maintain hash values
-   □ Document chain of custody
-   □ Store in secure environment
-   □ Backup evidence properly
-
-6. EXPERT CONSULTATION
-   □ Engage certified experts
-   □ Get technical opinions
-   □ Obtain court-admissible reports
-   □ Understand limitations
-   □ Document expert credentials
-        """,
-        
-        "Interview Process": """
-INTERVIEW PROCESS GUIDELINES
-
-1. PREPARATION
-   □ Review case background
-   □ Prepare question list
-   □ Arrange suitable venue
-   □ Inform about rights
-   □ Have witness present
-
-2. INTERVIEW STRUCTURE
-   □ Introduction and purpose
-   □ Obtain consent for recording
-   □ Start with open questions
-   □ Move to specific details
-   □ Clarify inconsistencies
-   □ Summarize key points
-
-3. QUESTIONING TECHNIQUES
-   □ Use neutral language
-   □ Avoid leading questions
-   □ Allow complete answers
-   □ Follow up on responses
-   □ Challenge inconsistencies politely
-   □ Note non-verbal cues
-
-4. DOCUMENTATION
-   □ Record interview accurately
-   □ Note time and participants
-   □ Include verbatim responses
-   □ Document refusals to answer
-   □ Get interview acknowledged
-   □ Maintain confidentiality
-
-5. LEGAL CONSIDERATIONS
-   □ Inform about rights
-   □ Avoid coercion
-   □ Allow legal representation
-   □ Respect privacy
-   □ Follow company policies
-   □ Consider criminal implications
-
-6. POST-INTERVIEW
-   □ Review and verify notes
-   □ Identify follow-up actions
-   □ Share relevant information
-   □ Maintain evidence security
-   □ Plan additional interviews
-   □ Update investigation status
-        """,
-        
-        "Evidence Preservation": """
-EVIDENCE PRESERVATION GUIDELINES
-
-1. INITIAL HANDLING
-   □ Document original condition
-   □ Photograph before handling
-   □ Use gloves when necessary
-   □ Avoid contamination
-   □ Label immediately
-   □ Record date and time
-
-2. CHAIN OF CUSTODY
-   □ Maintain detailed log
-   □ Record all handlers
-   □ Note transfer reasons
-   □ Get acknowledgments
-   □ Track location changes
-   □ Document access times
-
-3. PHYSICAL EVIDENCE
-   □ Store in appropriate conditions
-   □ Protect from damage
-   □ Maintain temperature control
-   □ Prevent unauthorized access
-   □ Use proper containers
-   □ Label clearly
-
-4. DIGITAL EVIDENCE
-   □ Create backup copies
-   □ Use write-protection
-   □ Calculate hash values
-   □ Store on secure media
-   □ Maintain access logs
-   □ Document software used
-
-5. DOCUMENTATION
-   □ Complete evidence forms
-   □ Photograph all evidence
-   □ Note condition changes
-   □ Record examination results
-   □ Maintain inventory
-   □ Update status regularly
-
-6. LEGAL REQUIREMENTS
-   □ Follow court procedures
-   □ Maintain admissibility
-   □ Respect privacy laws
-   □ Follow retention policies
-   □ Prepare for testimony
-   □ Coordinate with legal team
-        """
-    }
+    # Display chat history
+    chat_container = st.container()
+    with chat_container:
+        for i, message in enumerate(st.session_state.chat_history):
+            if message["role"] == "user":
+                st.markdown(f"**You:** {message['content']}")
+            else:
+                st.markdown(f"**AI Assistant:** {message['content']}")
+            st.divider()
     
-    if guideline_type in guidelines:
-        st.subheader(f"{guideline_type} Checklist")
-        st.text_area("Investigation Guidelines", value=guidelines[guideline_type], height=600)
-        
-        st.download_button(
-            label="Download Guidelines",
-            data=guidelines[guideline_type],
-            file_name=f"{guideline_type.lower().replace(' ', '_')}_guidelines.txt",
-            mime="text/plain"
+    # Chat input
+    with st.form("chat_form", clear_on_submit=True):
+        user_question = st.text_area(
+            "Ask your question:",
+            placeholder="Ask about investigation procedures, compliance requirements, legal guidance, case analysis, or any other assistance you need...",
+            height=100,
+            key="chat_input"
         )
+        
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col1:
+            submit_chat = st.form_submit_button("💬 Send", use_container_width=True)
+        with col2:
+            if st.form_submit_button("🔄 Clear Chat", use_container_width=True):
+                st.session_state.chat_history = []
+                st.rerun()
+        with col3:
+            if st.form_submit_button("📋 Quick Help", use_container_width=True):
+                user_question = "What are the key steps for investigating a suspected fraud case?"
+                submit_chat = True
+    
+    if submit_chat and user_question:
+        # Add user message to history
+        st.session_state.chat_history.append({"role": "user", "content": user_question})
+        
+        with st.spinner("AI is thinking..."):
+            # Create context from chat history
+            chat_context = ""
+            if len(st.session_state.chat_history) > 1:
+                recent_context = st.session_state.chat_history[-3:]  # Last 3 messages
+                chat_context = "Previous conversation:\n" + "\n".join([f"{msg['role']}: {msg['content']}" for msg in recent_context])
+            
+            prompt = f"""
+            You are an expert fraud investigation and compliance assistant for a financial institution. Provide helpful, accurate, and professional guidance.
+            
+            {chat_context}
+            
+            Current question: {user_question}
+            
+            Provide a comprehensive, professional response that includes:
+            1. Direct answer to the question
+            2. Relevant procedures or guidelines
+            3. Best practices
+            4. Any legal/regulatory considerations
+            5. Practical next steps if applicable
+            
+            Keep the response helpful, accurate, and appropriately detailed.
+            """
+            
+            ai_response = query_gemini(prompt, max_tokens=1200)
+            
+            # Add AI response to history
+            st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
+            
+            # Refresh to show new messages
+            st.rerun()
+    
+    # Quick action buttons
+    st.subheader("Quick Questions")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🔍 Document Verification Steps", use_container_width=True):
+            st.session_state.chat_history.append({
+                "role": "user", 
+                "content": "What are the standard steps for document verification in fraud cases?"
+            })
+            st.rerun()
+        
+        if st.button("📋 Legal Notice Guidelines", use_container_width=True):
+            st.session_state.chat_history.append({
+                "role": "user", 
+                "content": "What should be included in a legal notice for loan default?"
+            })
+            st.rerun()
+    
+    with col2:
+        if st.button("⚖️ Compliance Requirements", use_container_width=True):
+            st.session_state.chat_history.append({
+                "role": "user", 
+                "content": "What are the key compliance requirements for fraud investigation?"
+            })
+            st.rerun()
+        
+        if st.button("🎯 Evidence Collection", use_container_width=True):
+            st.session_state.chat_history.append({
+                "role": "user", 
+                "content": "How should evidence be collected and preserved in fraud cases?"
+            })
+            st.rerun()

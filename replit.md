@@ -55,13 +55,13 @@ Preferred communication style: Simple, everyday language.
   - Added Case ID and LAN columns to Cases Requiring Approval section
   - Cases Requiring Review section now shows actual submitted cases
   - Cases Requiring Approval section now shows actual cases under review
-- Implemented Simple Template-Based AI Assistant:
-  - No external API calls or authentication required
-  - Professional templates for case analysis, document generation, and investigation guidelines
-  - Comprehensive frameworks for Document Fraud, Identity Fraud, Financial Fraud, Compliance Violations
-  - Ready-to-use templates for Show Cause Notices, Legal Notices, Investigation Reports
-  - Step-by-step investigation guidelines and checklists
-  - Completely offline and free to use
+- Implemented Advanced Gemini-Powered AI Assistant:
+  - Integrated Google Gemini AI for intelligent case analysis and document generation
+  - Smart Case Analysis: AI-powered analysis with risk assessment and investigation priorities
+  - AI Document Generator: Automatically creates professional legal documents with context
+  - Interactive AI Chat: Real-time assistance for investigation procedures and compliance guidance
+  - Uses provided Gemini API key for secure, authenticated AI responses
+  - Comprehensive analysis frameworks for all fraud types with intelligent insights
 - Implemented AI-powered auto-suggestions/completion:
   - Quick remarks in all review stages (Review, Approval, Legal, Closure)
   - Predefined templates for common fraud scenarios and investigation findings
