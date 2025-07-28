@@ -91,32 +91,72 @@ def show_login():
     with col2:
         # Login form section
         st.markdown("<div style='margin-left: 50px;'margin-top: 80px;'>", unsafe_allow_html=True)
-        with st.form("login_form"):
-            st.markdown("### UAT Mode")
-            username = st.text_input("User ID", placeholder="Enter your User ID")
-            password = st.text_input("Password", type="password", placeholder="Enter your password")
-            
-            # Role selection dropdown
-            roles = ["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Investigator", "Admin"]
-            selected_role = st.selectbox("Login as Role", roles)
-            
-            col_a, col_b, col_c = st.columns([1, 1, 1])
-            with col_b:
-                login_button = st.form_submit_button("🚀 Login", use_container_width=True)
-            
-            if login_button:
-                if username and password:
-                    success, message = authenticate_user(username, password, selected_role)
+        # Check if we need to show role selection
+        if "show_role_selection" not in st.session_state:
+            st.session_state.show_role_selection = False
+        
+        if not st.session_state.show_role_selection:
+            # Initial login form - just credentials
+            with st.form("login_form"):
+                st.markdown("### UAT Mode")
+                username = st.text_input("User ID", placeholder="Enter your User ID")
+                password = st.text_input("Password", type="password", placeholder="Enter your password")
+                
+                col_a, col_b, col_c = st.columns([1, 1, 1])
+                with col_b:
+                    login_button = st.form_submit_button("🚀 Login", use_container_width=True)
+                
+                if login_button:
+                    if username and password:
+                        # Store credentials and show role selection
+                        st.session_state.temp_username = username
+                        st.session_state.temp_password = password
+                        st.session_state.show_role_selection = True
+                        st.rerun()
+                    else:
+                        st.warning("⚠️ Please enter both User ID and password")
+        
+        else:
+            # Role selection form
+            with st.form("role_selection_form"):
+                st.markdown("### Select Your Role")
+                st.info(f"Welcome back, {st.session_state.temp_username}!")
+                
+                # Role selection dropdown
+                roles = ["Initiator", "Reviewer", "Approver", "Legal Reviewer", "Actioner", "Investigator", "Admin"]
+                selected_role = st.selectbox("Login as Role", roles)
+                
+                col_a, col_b, col_c = st.columns([1, 1, 1])
+                with col_a:
+                    back_button = st.form_submit_button("← Back", use_container_width=True)
+                with col_c:
+                    proceed_button = st.form_submit_button("Proceed →", use_container_width=True)
+                
+                if back_button:
+                    # Go back to credential entry
+                    st.session_state.show_role_selection = False
+                    if "temp_username" in st.session_state:
+                        del st.session_state.temp_username
+                    if "temp_password" in st.session_state:
+                        del st.session_state.temp_password
+                    st.rerun()
+                
+                if proceed_button:
+                    success, message = authenticate_user(st.session_state.temp_username, st.session_state.temp_password, selected_role)
                     if success:
                         st.success("✅ Login successful!")
                         # Set flag to show AI tip popup after login
                         if selected_role in ["Initiator", "Investigator", "Admin"]:
                             st.session_state.show_ai_tip = True
+                        # Clean up temporary data
+                        st.session_state.show_role_selection = False
+                        if "temp_username" in st.session_state:
+                            del st.session_state.temp_username
+                        if "temp_password" in st.session_state:
+                            del st.session_state.temp_password
                         st.rerun()
                     else:
                         st.error(f"❌ {message}")
-                else:
-                    st.warning("⚠️ Please enter both User ID and password")
         st.markdown("</div>", unsafe_allow_html=True)
 
 def show_sidebar(role):
