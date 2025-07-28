@@ -74,6 +74,23 @@ Preferred communication style: Simple, everyday language.
   - Template-based quick input across all workflow stages
 - Updated database schema to support all user master fields
 - Fixed LSP errors in user management and form validation
+- Created New Investigator Role System (Latest Update):
+  - Added new "Investigator" role with comprehensive access permissions
+  - Investigators can access Case Entry, Reviewer Panel, and specialized Investigation Panel
+  - Built complete Investigation Panel with four main tabs:
+    - Case Management: Quick case entry and case review functionality
+    - Investigation Details: Comprehensive investigation forms with document verification
+    - Investigation Analytics: Status tracking and verification success rate metrics
+    - PDF Report Generation: Professional investigation reports using ReportLab
+  - Extended AI Assistant access to include Investigator role
+  - Implemented detailed investigation workflow with verification tracking
+  - Added professional PDF report generation for investigation documentation
+- Enhanced AI Assistant User Experience:
+  - Removed duplicate "Show Cause Notice Template" section
+  - Added "Enhance Description" feature for case summaries using AI
+  - Implemented hidden label with app navigation terms for system reference
+  - Added professional footer "Powered by Fraud Risk Management Unit" in ABCL red color
+  - Improved case description enhancement with AI-powered suggestions
 
 ## System Architecture
 

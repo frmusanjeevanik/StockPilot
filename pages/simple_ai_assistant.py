@@ -305,6 +305,9 @@ def show_ai_document_generator():
     """AI-powered document generation"""
     st.subheader("📝 AI Document Generator")
     
+    # Add informational note about case description enhancement
+    st.info("💡 **Use AI to improve your case description:** Type your summary in the box. Click the small button on the bottom-right that says 'Enhance Description' to auto-generate or improve it using AI.")
+    
     with st.form("document_generator_form"):
         doc_type = st.selectbox(
             "Document Type",
@@ -319,11 +322,27 @@ def show_ai_document_generator():
             loan_amount = st.text_input("Loan Amount (if applicable)")
             branch_location = st.text_input("Branch/Location")
         
-        case_summary = st.text_area(
-            "Case Summary/Key Details",
-            placeholder="Provide key details about the case, violations, or issues...",
-            height=150
-        )
+        # Case summary with enhancement option
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            case_summary = st.text_area(
+                "Case Summary/Key Details",
+                placeholder="Provide key details about the case, violations, or issues...",
+                height=150,
+                key="case_summary_input"
+            )
+        with col2:
+            st.markdown("<br><br>", unsafe_allow_html=True)
+            enhance_desc = st.form_submit_button("✨ Enhance Description", help="Use AI to improve case description")
+        
+        # Show enhanced description if available
+        if "enhanced_case_summary" in st.session_state:
+            case_summary = st.text_area(
+                "Enhanced Case Summary",
+                value=st.session_state.enhanced_case_summary,
+                height=150,
+                key="enhanced_summary_display"
+            )
         
         specific_requirements = st.text_area(
             "Specific Requirements",
@@ -332,6 +351,27 @@ def show_ai_document_generator():
         )
         
         submit_document = st.form_submit_button("📝 Generate Document", use_container_width=True)
+    
+    # Handle description enhancement
+    if enhance_desc and st.session_state.get("case_summary_input"):
+        with st.spinner("Enhancing description with AI..."):
+            enhanced_prompt = f"""
+            Please enhance and improve the following case description for a fraud investigation report. 
+            Make it more professional, detailed, and comprehensive while maintaining accuracy:
+            
+            Original description: {st.session_state.case_summary_input}
+            
+            Please provide an enhanced version that:
+            1. Uses professional fraud investigation terminology
+            2. Structures information clearly
+            3. Highlights key risk factors
+            4. Maintains factual accuracy
+            5. Follows banking industry standards
+            """
+            
+            enhanced_description = query_gemini(enhanced_prompt, max_tokens=800)
+            st.session_state.enhanced_case_summary = enhanced_description
+            st.rerun()
     
     if submit_document and recipient_name and case_summary:
         with st.spinner("Generating document with AI..."):
@@ -617,16 +657,7 @@ Date: [Date]
         """
     }
     
-    if doc_type in templates:
-        st.subheader(f"{doc_type} Template")
-        st.text_area("Document Template", value=templates[doc_type], height=600)
-        
-        st.download_button(
-            label="Download Template",
-            data=templates[doc_type],
-            file_name=f"{doc_type.lower().replace(' ', '_')}_template.txt",
-            mime="text/plain"
-        )
+
 
 def show_ai_chat_assistant():
     """Interactive AI chat assistant"""
@@ -736,3 +767,17 @@ def show_ai_chat_assistant():
                 "content": "How should evidence be collected and preserved in fraud cases?"
             })
             st.rerun()
+    
+    # Hidden label at the bottom left
+    st.markdown("""
+    <div style='position: fixed; bottom: 5px; left: 5px; font-size: 1px; color: #F2F0F6; z-index: 1000;'>
+    app admin panel analytics approver panel case entry closure panel dashboard legal panel reviewer panel simple ai assistant user management
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Footer credit at the bottom center
+    st.markdown("""
+    <div style='position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: #C7222A; font-size: 12px; font-weight: 500; text-align: center; z-index: 1000;'>
+    Powered by Fraud Risk Management Unit
+    </div>
+    """, unsafe_allow_html=True)
