@@ -254,15 +254,25 @@ def show_case_management():
             investigation_cases = cursor.fetchall()
         
         if investigation_cases:
-            for case in investigation_cases:
-                with st.expander(f"📋 {case['case_id']} - {case['case_type']}"):
-                    st.markdown(f"**LAN:** {case['lan']}")
-                    st.markdown(f"**Status:** {case['status']}")
-                    st.markdown(f"**Description:** {case['case_description'][:100]}...")
+            # Case selection via selectbox instead of buttons
+            case_options = [f"{case['case_id']} - {case['case_type']}" for case in investigation_cases]
+            selected_case_option = st.selectbox("Select a case to investigate:", [""] + case_options)
+            
+            if selected_case_option:
+                selected_case_id = selected_case_option.split(" - ")[0]
+                st.session_state.selected_case_for_investigation = selected_case_id
+                
+                # Show selected case details
+                selected_case = next(case for case in investigation_cases if case['case_id'] == selected_case_id)
+                with st.expander(f"📋 Selected Case Details", expanded=True):
+                    st.markdown(f"**Case ID:** {selected_case['case_id']}")
+                    st.markdown(f"**LAN:** {selected_case['lan']}")
+                    st.markdown(f"**Type:** {selected_case['case_type']}")
+                    st.markdown(f"**Status:** {selected_case['status']}")
+                    st.markdown(f"**Description:** {selected_case['case_description']}")
                     
-                    if st.button(f"🔍 Investigate {case['case_id']}", key=f"investigate_{case['case_id']}"):
-                        st.session_state.selected_case_for_investigation = case['case_id']
-                        st.rerun()
+                    if st.button("🔍 Start Investigation", use_container_width=True):
+                        st.info("✅ Case selected for investigation. Switch to 'Investigation Details' tab to continue.")
         else:
             st.info("📭 No cases available for investigation")
 

@@ -173,8 +173,9 @@ def show_ai_document_generator():
         with col1:
             recipient_name = st.text_input("Recipient Name")
             case_id = st.text_input("Case ID/LAN")
+            customer_email = st.text_input("Customer Email ID")
         with col2:
-            loan_amount = st.text_input("Loan Amount (if applicable)")
+            loan_amount = st.text_input("Loan Amount")
             branch_location = st.text_input("Branch/Location")
         
         # Case summary with enhancement option
@@ -237,6 +238,7 @@ def show_ai_document_generator():
             
             Recipient: {recipient_name}
             Case ID/LAN: {case_id}
+            Customer Email ID: {customer_email}
             Loan Amount: {loan_amount}
             Branch: {branch_location}
             Case Summary: {case_summary}
