@@ -148,7 +148,7 @@ def show():
             st.info(f"AI Template Applied: {st.session_state.selected_case_description[:100]}...")
         
         case_description = st.text_area(
-            "",
+            "Case Description Details",
             value=st.session_state.get("selected_case_description", ""),
             placeholder="Provide detailed description of the case or use AI templates above",
             height=120,
@@ -189,7 +189,6 @@ def show():
                 "customer_name": customer_name.strip(),
                 "customer_dob": customer_dob.strftime("%Y-%m-%d"),
                 "customer_pan": customer_pan.strip().upper(),
-
                 "customer_mobile": customer_mobile.strip(),
                 "customer_email": customer_email.strip().lower(),
                 "branch_location": branch_location.strip(),

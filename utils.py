@@ -78,7 +78,7 @@ def validate_case_data(case_data):
     # Required demographic fields
     demographic_fields = [
         "customer_name", "customer_dob", "customer_pan", 
-        "customer_address", "customer_mobile", "customer_email",
+        "customer_mobile", "customer_email",
         "branch_location", "loan_amount", "disbursement_date"
     ]
     

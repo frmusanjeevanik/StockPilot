@@ -27,12 +27,12 @@ def create_case(case_data, created_by):
         cursor.execute('''
             INSERT INTO cases (case_id, lan, case_type, product, region, referred_by, 
                              case_description, case_date, created_by, status, case_source,
-                             customer_name, customer_dob, customer_pan, customer_address,
+                             customer_name, customer_dob, customer_pan, 
                              customer_mobile, customer_email, branch_location, loan_amount,
                              disbursement_date, repayment_status, linked_loan_accounts,
                              customer_type, kyc_status, risk_category,
                              fmr1_due_date, document_retention_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             case_data["case_id"],
             case_data["lan"],
@@ -48,7 +48,6 @@ def create_case(case_data, created_by):
             case_data.get("customer_name", ""),
             case_data.get("customer_dob"),
             case_data.get("customer_pan", ""),
-            case_data.get("customer_address", ""),
             case_data.get("customer_mobile", ""),
             case_data.get("customer_email", ""),
             case_data.get("branch_location", ""),
