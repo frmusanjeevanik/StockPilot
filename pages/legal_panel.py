@@ -82,10 +82,33 @@ def show_legal_case_details(case, current_user):
     # Legal review actions
     st.write("**Legal Review Actions:**")
     
+    # Legal comments with AI suggestions
+    st.markdown("**Legal Review Comments**")
+    col_leg1, col_leg2 = st.columns([3, 1])
+    with col_leg2:
+        if st.button("💡 Quick Remarks", key=f"legal_sugg_{case['case_id']}"):
+            from ai_suggestions import get_remarks_suggestions
+            suggestions = get_remarks_suggestions()["legal_stage"]
+            st.session_state[f"legal_suggestions_{case['case_id']}"] = suggestions
+    
+    # Show suggestions
+    if f"legal_suggestions_{case['case_id']}" in st.session_state:
+        st.markdown("**Quick Remarks:**")
+        legal_cols = st.columns(2)
+        for i, suggestion in enumerate(st.session_state[f"legal_suggestions_{case['case_id']}"][:4]):
+            col_idx = i % 2
+            with legal_cols[col_idx]:
+                if st.button(f"📝 {suggestion[:30]}...", key=f"leg_sugg_{case['case_id']}_{i}", help=suggestion):
+                    st.session_state[f"selected_legal_{case['case_id']}"] = suggestion
+                    st.rerun()
+    
+    initial_legal = st.session_state.get(f"selected_legal_{case['case_id']}", "")
     legal_comment = st.text_area(
-        "Legal Review Comments",
+        "",
+        value=initial_legal,
         key=f"legal_comment_{case['case_id']}",
-        placeholder="Enter legal analysis and recommendations..."
+        placeholder="Enter legal analysis and recommendations or use quick remarks above...",
+        height=80
     )
     
     # Legal action type

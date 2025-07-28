@@ -61,6 +61,22 @@ Preferred communication style: Simple, everyday language.
   - Draft detailed Investigation Reports with proper structure
   - Interactive chat assistant for legal guidance and fraud investigation advice
   - Available to all user roles for enhanced document generation and legal support
+- Added Free AI Assistant for cost optimization:
+  - Uses Hugging Face free models (Llama 3.2, Phi-3, Mistral, CodeLlama)
+  - Case analysis and basic document drafting capabilities
+  - No API costs - completely free alternative to OpenAI
+  - Available alongside premium AI Legal Assistant
+- Implemented AI-powered auto-suggestions/completion:
+  - Case description suggestions in Case Entry with "Get AI Suggestions" button
+  - Quick remarks in all review stages (Review, Approval, Legal, Closure)
+  - Predefined templates for common fraud scenarios and investigation findings
+  - Streamlined workflow with one-click template insertion
+  - Context-aware suggestions based on case type and stage
+- Enhanced user experience with smart features:
+  - Auto-completion for case descriptions and remarks
+  - Consistent "AI Assistant" terminology throughout system
+  - Interactive suggestion buttons in all comment fields
+  - Template-based quick input across all workflow stages
 - Updated database schema to support all user master fields
 - Fixed LSP errors in user management and form validation
 

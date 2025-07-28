@@ -96,11 +96,33 @@ def show_case_details(case, current_user, allow_review=True):
     if allow_review and case['status'] in ['Submitted', 'Under Review']:
         st.write("**Review Actions:**")
         
-        # Comment section
+        # Comment section with AI suggestions
+        st.markdown("**Add Review Comment**")
+        col_comm1, col_comm2 = st.columns([3, 1])
+        with col_comm2:
+            if st.button("💡 Quick Remarks", key=f"review_sugg_{case['case_id']}"):
+                from ai_suggestions import get_remarks_suggestions
+                suggestions = get_remarks_suggestions()["review_stage"]
+                st.session_state[f"review_suggestions_{case['case_id']}"] = suggestions
+        
+        # Show suggestions
+        if f"review_suggestions_{case['case_id']}" in st.session_state:
+            st.markdown("**Quick Remarks:**")
+            remarks_cols = st.columns(2)
+            for i, suggestion in enumerate(st.session_state[f"review_suggestions_{case['case_id']}"][:4]):
+                col_idx = i % 2
+                with remarks_cols[col_idx]:
+                    if st.button(f"📝 {suggestion[:30]}...", key=f"rev_sugg_{case['case_id']}_{i}", help=suggestion):
+                        st.session_state[f"selected_review_{case['case_id']}"] = suggestion
+                        st.rerun()
+        
+        initial_comment = st.session_state.get(f"selected_review_{case['case_id']}", "")
         review_comment = st.text_area(
-            "Add Review Comment",
+            "",
+            value=initial_comment,
             key=f"comment_{case['case_id']}",
-            placeholder="Enter your review comments..."
+            placeholder="Enter your review comments or use quick remarks above...",
+            height=80
         )
         
         # Action buttons

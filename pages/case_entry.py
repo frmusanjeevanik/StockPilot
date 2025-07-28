@@ -89,11 +89,36 @@ def show():
         
         status = st.selectbox("Status", ["Draft", "Submitted"], index=0)
         
-        # Case description
+        # Case description with AI suggestions
+        st.markdown("**Case Description** *")
+        
+        # AI suggestion button
+        col_desc1, col_desc2 = st.columns([3, 1])
+        with col_desc2:
+            if st.button("💡 Get AI Suggestions", key="case_desc_suggestions"):
+                from ai_suggestions import get_case_description_suggestions
+                suggestions = get_case_description_suggestions()
+                st.session_state.case_desc_suggestions = suggestions
+        
+        # Show suggestions if available
+        if "case_desc_suggestions" in st.session_state:
+            st.markdown("**Quick Suggestions:**")
+            suggestion_cols = st.columns(2)
+            for i, suggestion in enumerate(st.session_state.case_desc_suggestions[:6]):
+                col_idx = i % 2
+                with suggestion_cols[col_idx]:
+                    if st.button(f"📝 {suggestion[:50]}...", key=f"desc_sugg_{i}", help=suggestion):
+                        st.session_state.selected_case_description = suggestion
+                        st.rerun()
+        
+        # Case description text area
+        initial_desc = st.session_state.get("selected_case_description", "")
         case_description = st.text_area(
-            "Case Description *",
-            placeholder="Provide detailed description of the case",
-            height=120
+            "",
+            value=initial_desc,
+            placeholder="Provide detailed description of the case, or click 'Get AI Suggestions' for templates",
+            height=120,
+            key="case_description_input"
         )
         
         # File upload

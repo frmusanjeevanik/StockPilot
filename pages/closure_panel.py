@@ -112,10 +112,33 @@ def show_closure_case_details(case, current_user):
             key=f"other_closure_{case['case_id']}"
         )
     
+    # Closure comments with AI suggestions
+    st.markdown("**Closure Comments**")
+    col_clos1, col_clos2 = st.columns([3, 1])
+    with col_clos2:
+        if st.button("💡 Quick Remarks", key=f"closure_sugg_{case['case_id']}"):
+            from ai_suggestions import get_remarks_suggestions
+            suggestions = get_remarks_suggestions()["closure_stage"]
+            st.session_state[f"closure_suggestions_{case['case_id']}"] = suggestions
+    
+    # Show suggestions
+    if f"closure_suggestions_{case['case_id']}" in st.session_state:
+        st.markdown("**Quick Remarks:**")
+        closure_cols = st.columns(2)
+        for i, suggestion in enumerate(st.session_state[f"closure_suggestions_{case['case_id']}"][:4]):
+            col_idx = i % 2
+            with closure_cols[col_idx]:
+                if st.button(f"📝 {suggestion[:30]}...", key=f"clos_sugg_{case['case_id']}_{i}", help=suggestion):
+                    st.session_state[f"selected_closure_{case['case_id']}"] = suggestion
+                    st.rerun()
+    
+    initial_closure = st.session_state.get(f"selected_closure_{case['case_id']}", "")
     closure_comments = st.text_area(
-        "Closure Comments",
+        "",
+        value=initial_closure,
         key=f"closure_comment_{case['case_id']}",
-        placeholder="Enter detailed closure comments, actions taken, and final resolution..."
+        placeholder="Enter detailed closure comments, actions taken, and final resolution or use quick remarks above...",
+        height=80
     )
     
     # Additional closure details

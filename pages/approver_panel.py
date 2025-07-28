@@ -89,10 +89,33 @@ def show_case_details_for_approval(case, current_user):
     # Approval actions
     st.write("**Approval Actions:**")
     
+    # Approval comments with AI suggestions
+    st.markdown("**Approval Comments**")
+    col_app1, col_app2 = st.columns([3, 1])
+    with col_app2:
+        if st.button("💡 Quick Remarks", key=f"approval_sugg_{case['case_id']}"):
+            from ai_suggestions import get_remarks_suggestions
+            suggestions = get_remarks_suggestions()["approval_stage"]
+            st.session_state[f"approval_suggestions_{case['case_id']}"] = suggestions
+    
+    # Show suggestions
+    if f"approval_suggestions_{case['case_id']}" in st.session_state:
+        st.markdown("**Quick Remarks:**")
+        approval_cols = st.columns(2)
+        for i, suggestion in enumerate(st.session_state[f"approval_suggestions_{case['case_id']}"][:4]):
+            col_idx = i % 2
+            with approval_cols[col_idx]:
+                if st.button(f"📝 {suggestion[:30]}...", key=f"app_sugg_{case['case_id']}_{i}", help=suggestion):
+                    st.session_state[f"selected_approval_{case['case_id']}"] = suggestion
+                    st.rerun()
+    
+    initial_approval = st.session_state.get(f"selected_approval_{case['case_id']}", "")
     approval_comment = st.text_area(
-        "Approval Comments",
+        "",
+        value=initial_approval,
         key=f"approval_comment_{case['case_id']}",
-        placeholder="Enter your approval decision comments..."
+        placeholder="Enter your approval decision comments or use quick remarks above...",
+        height=80
     )
     
     col1, col2, col3 = st.columns(3)

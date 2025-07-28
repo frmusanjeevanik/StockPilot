@@ -321,7 +321,7 @@ def chat_assistant():
                     
                     messages = [{"role": "system", "content": system_prompt}]
                     for msg in st.session_state.chat_messages[-5:]:  # Last 5 messages for context
-                        messages.append(msg)
+                        messages.append({"role": msg["role"], "content": msg["content"]})
                     
                     response = client.chat.completions.create(
                         model="gpt-4o",  # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
