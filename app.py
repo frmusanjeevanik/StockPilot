@@ -17,7 +17,7 @@ import pages.legal_panel as legal_panel
 import pages.closure_panel as closure_panel
 import pages.admin_panel as admin_panel
 import pages.user_management as user_management
-import pages.free_ai_assistant as free_ai_assistant
+import pages.simple_ai_assistant as simple_ai_assistant
 
 # Page configuration
 st.set_page_config(
@@ -201,7 +201,7 @@ def show_main_content():
     elif page == "User Management":
         user_management.show()
     elif page == "AI Assistant":
-        free_ai_assistant.show()
+        simple_ai_assistant.show()
     else:
         st.error("Page not found")
 

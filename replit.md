@@ -55,12 +55,13 @@ Preferred communication style: Simple, everyday language.
   - Added Case ID and LAN columns to Cases Requiring Approval section
   - Cases Requiring Review section now shows actual submitted cases
   - Cases Requiring Approval section now shows actual cases under review
-- Implemented comprehensive AI Assistant using free Hugging Face models:
-  - Uses free models (Llama 3.2, Phi-3, Mistral, CodeLlama) - zero API costs
-  - Comprehensive case analysis with detailed fraud investigation guidance
-  - Professional document generation (Show Cause Notices, Legal Notices, Reports)
-  - Interactive chat assistant for investigation queries and compliance guidance
-  - Removed OpenAI dependency due to quota limitations
+- Implemented Simple Template-Based AI Assistant:
+  - No external API calls or authentication required
+  - Professional templates for case analysis, document generation, and investigation guidelines
+  - Comprehensive frameworks for Document Fraud, Identity Fraud, Financial Fraud, Compliance Violations
+  - Ready-to-use templates for Show Cause Notices, Legal Notices, Investigation Reports
+  - Step-by-step investigation guidelines and checklists
+  - Completely offline and free to use
 - Implemented AI-powered auto-suggestions/completion:
   - Quick remarks in all review stages (Review, Approval, Legal, Closure)
   - Predefined templates for common fraud scenarios and investigation findings
