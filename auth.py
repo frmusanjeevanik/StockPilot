@@ -14,7 +14,7 @@ def authenticate_user(username, password, selected_role=None):
             user_assigned_role = user["role"]  # Get user's assigned role from database
             
             # Check role access permissions
-            user_has_all_roles_access = user.get("all_roles_access", False)
+            user_has_all_roles_access = user["all_roles_access"] if "all_roles_access" in user.keys() else False
             
             if selected_role and user_assigned_role != selected_role:
                 # Admin users can access any role

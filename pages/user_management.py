@@ -34,7 +34,7 @@ def show_users_list():
         # Display users in a table format
         user_data = []
         for user in users:
-            access_level = "All Roles" if user.get("all_roles_access") else user["role"]
+            access_level = "All Roles" if (user["all_roles_access"] if "all_roles_access" in user.keys() else False) else user["role"]
             user_data.append({
                 "User ID": user["username"],
                 "Name": user["name"] or "N/A",
@@ -227,7 +227,7 @@ def show_edit_user():
                 # Role assignment option for admin
                 st.markdown("**Role Assignment:**")
                 all_roles_access = st.checkbox("Grant All Roles Access", 
-                                             value=selected_user.get('all_roles_access', False),
+                                             value=selected_user["all_roles_access"] if "all_roles_access" in selected_user.keys() else False,
                                              help="Allow user to login as any role except Admin")
                 new_password = ""
                 confirm_new_password = ""
