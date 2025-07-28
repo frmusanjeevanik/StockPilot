@@ -26,13 +26,8 @@ def create_case(case_data, created_by):
         
         cursor.execute('''
             INSERT INTO cases (case_id, lan, case_type, product, region, referred_by, 
-                             case_description, case_date, created_by, status, case_source,
-                             customer_name, customer_dob, customer_pan, 
-                             customer_mobile, customer_email, branch_location, loan_amount,
-                             disbursement_date, repayment_status, linked_loan_accounts,
-                             customer_type, kyc_status, risk_category,
-                             fmr1_due_date, document_retention_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             case_description, case_date, created_by, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             case_data["case_id"],
             case_data["lan"],
@@ -43,23 +38,7 @@ def create_case(case_data, created_by):
             case_data["case_description"],
             case_data["case_date"],
             created_by,
-            case_data.get("status", "Draft"),
-            case_data.get("case_source", ""),
-            case_data.get("customer_name", ""),
-            case_data.get("customer_dob"),
-            case_data.get("customer_pan", ""),
-            case_data.get("customer_mobile", ""),
-            case_data.get("customer_email", ""),
-            case_data.get("branch_location", ""),
-            case_data.get("loan_amount"),
-            case_data.get("disbursement_date"),
-            case_data.get("repayment_status", ""),
-            case_data.get("linked_loan_accounts", ""),
-            case_data.get("customer_type", "Individual"),
-            case_data.get("kyc_status", "Pending"),
-            case_data.get("risk_category", ""),
-            case_data.get("fmr1_due_date"),
-            case_data.get("document_retention_date")
+            case_data.get("status", "Draft")
         ))
         
         conn.commit()
@@ -246,6 +225,13 @@ def get_audit_logs(case_id=None, limit=100):
                 LIMIT ?
             ''', (limit,))
         
+        return cursor.fetchall()
+
+def get_cases_by_status(status):
+    """Get cases by status"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM cases WHERE status = ? ORDER BY created_at DESC", (status,))
         return cursor.fetchall()
 
 def search_cases(search_term, filters=None):

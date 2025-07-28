@@ -147,50 +147,15 @@ def show():
         with col2:
             case_date = st.date_input("Case Date *", datetime.today())
         
-        # Case description with AI enhancement
+        # Case description
         st.subheader("📝 Case Description")
         
-
-        
-        # Text area with relative positioning for button overlay
         case_description = st.text_area(
-            "Case Description",
+            "Case Description *",
             placeholder="Provide detailed description of the case",
             height=120,
-            key="case_description_input",
-            label_visibility="collapsed"
+            key="case_description_input"
         )
-        
-        # Small enhance button positioned at bottom-right  
-        col1, col2 = st.columns([7, 1])
-        with col2:
-            st.markdown("""
-            <div style='text-align: right; margin-top: -35px;'>
-            <style>
-            div[data-testid="stForm"] button[kind="formSubmit"] {
-                height: 32px !important;
-                min-height: 32px !important;
-                padding: 4px 8px !important;
-                font-size: 12px !important;
-                border-radius: 4px !important;
-                width: auto !important;
-            }
-            </style>
-            </div>
-            """, unsafe_allow_html=True)
-            enhance_desc = st.form_submit_button(
-                "✨ Enhance", 
-                help="Use AI to improve case description"
-            )
-        
-        # Show enhanced description if available
-        if "enhanced_case_description" in st.session_state:
-            case_description = st.text_area(
-                "Enhanced Case Description",
-                value=st.session_state.enhanced_case_description,
-                height=120,
-                key="enhanced_description_display"
-            )
         
         # File upload
         st.subheader("📎 Supporting Documents")
@@ -209,29 +174,6 @@ def show():
         with col2:
             submit_final = st.form_submit_button("📤 Submit Final", use_container_width=True)
         
-        # Handle description enhancement
-        if enhance_desc and st.session_state.get("case_description_input"):
-            with st.spinner("Enhancing description with AI..."):
-                enhanced_prompt = f"""
-                Please enhance and improve the following case description for a fraud investigation report. 
-                Make it more professional, detailed, and comprehensive while maintaining accuracy:
-                
-                Original description: {st.session_state.case_description_input}
-                
-                Please provide an enhanced version that:
-                1. Uses professional fraud investigation terminology
-                2. Structures information clearly
-                3. Highlights key risk factors
-                4. Maintains factual accuracy
-                5. Follows banking industry standards
-                
-                Do not use any bold formatting with asterisks in the output.
-                """
-                
-                enhanced_description = query_gemini(enhanced_prompt, max_tokens=800)
-                st.session_state.enhanced_case_description = enhanced_description
-                st.rerun()
-        
         # Handle form submission
         if save_draft or submit_final:
             case_data = {
@@ -243,17 +185,7 @@ def show():
                 "referred_by": referred_by,
                 "case_description": (case_description or "").strip(),
                 "case_date": case_date.strftime("%Y-%m-%d"),
-                "status": "Submitted" if submit_final else "Draft",
-                "case_source": "Case Entry Form",
-                # Demographics
-                "customer_name": customer_name.strip(),
-                "customer_dob": customer_dob.strftime("%Y-%m-%d"),
-                "customer_pan": customer_pan.strip().upper(),
-                "customer_mobile": customer_mobile.strip(),
-                "customer_email": customer_email.strip().lower(),
-                "branch_location": branch_location.strip(),
-                "loan_amount": loan_amount,
-                "disbursement_date": disbursement_date.strftime("%Y-%m-%d")
+                "status": "Submitted" if submit_final else "Draft"
             }
             
             # Validate data
