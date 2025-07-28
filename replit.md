@@ -8,14 +8,15 @@ Tathya is a comprehensive case management system built with Streamlit for handli
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (July 26, 2025)
-- Fixed plotly visualization errors in analytics dashboard
-- Updated login page layout with proper logo placement (Tathya left, login form right, ABCL top-right)
-- Reorganized sidebar navigation (Navigation section appears first, then user welcome)
-- Renamed "Closure Panel" to "🔒 Action Closure Panel" in navigation
-- Removed Analytics from main navigation for cleaner interface
-- Added custom logo support with fallback to text logos
-- Fixed pandas date range deprecation warnings
+## Recent Changes (July 28, 2025)
+- Restored original code files from main directory to pages directory
+- Moved user information and session details from left sidebar to right-bottom area
+- Removed session expiry message display (only shows remaining time)
+- Added Quick Access panel in right column with role-specific navigation shortcuts
+- Reorganized main layout with 4:1 column ratio (main content : user info)
+- Simplified sidebar to show only navigation menu and logout button
+- Maintained all navigation functionality accessible through both sidebar and quick access
+- Fixed plotly import and variable initialization errors
 
 ## System Architecture
 

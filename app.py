@@ -55,8 +55,8 @@ def main():
     # Sidebar navigation
     show_sidebar(role)
     
-    # Main content
-    show_main_content()
+    # Main content with layout modification
+    show_main_content(role)
 
 def show_login():
     """Display login form"""
@@ -106,16 +106,15 @@ def show_login():
 
 def show_sidebar(role):
     """Display sidebar navigation based on user role"""
-    # Check session timeout
+    # Check session timeout - only logout, no message display
     if check_session_timeout():
-        st.sidebar.error("⏰ Session expired due to inactivity")
         logout_user()
         st.rerun()
     
     # Update last activity
     update_last_activity()
     
-    # Navigation menu (moved to top)
+    # Navigation menu
     st.sidebar.markdown("### 📁 Navigation")
     
     # Base menu items - only Dashboard for all users
@@ -150,47 +149,87 @@ def show_sidebar(role):
                 st.session_state.selected_page = item
             st.rerun()
     
+    # Logout button only
     st.sidebar.divider()
-    
-    # User info moved to bottom
-    st.sidebar.markdown("### 👤 User Information")
-    st.sidebar.markdown(f"**User:** {st.session_state.username}")
-    st.sidebar.markdown(f"**Role:** {role}")
-    
-    # Session timeout indicator
-    remaining_time = get_remaining_session_time()
-    if remaining_time > 0:
-        st.sidebar.markdown(f"**Session:** {remaining_time} min remaining")
-    else:
-        st.sidebar.markdown("**Session:** Expired")
-    
-    # Logout button
     if st.sidebar.button("🚪 Logout", use_container_width=True):
         logout_user()
         st.rerun()
 
-def show_main_content():
-    """Display main content based on selected page"""
-    page = st.session_state.selected_page
+def show_main_content(role):
+    """Display main content based on selected page with user info in right-bottom"""
+    # Create main layout
+    main_col, info_col = st.columns([4, 1])
     
-    if page == "Dashboard":
-        dashboard.show()
-    elif page == "Case Entry":
-        case_entry.show()
-    elif page == "Analytics":
-        analytics.show()
-    elif page == "Reviewer Panel":
-        reviewer_panel.show()
-    elif page == "Approver Panel":
-        approver_panel.show()
-    elif page == "Legal Panel":
-        legal_panel.show()
-    elif page == "Closure Panel":
-        closure_panel.show()
-    elif page == "Admin Panel":
-        admin_panel.show()
-    else:
-        st.error("Page not found")
+    with main_col:
+        # Main page content
+        page = st.session_state.selected_page
+        
+        if page == "Dashboard":
+            dashboard.show()
+        elif page == "Case Entry":
+            case_entry.show()
+        elif page == "Analytics":
+            analytics.show()
+        elif page == "Reviewer Panel":
+            reviewer_panel.show()
+        elif page == "Approver Panel":
+            approver_panel.show()
+        elif page == "Legal Panel":
+            legal_panel.show()
+        elif page == "Closure Panel":
+            closure_panel.show()
+        elif page == "Admin Panel":
+            admin_panel.show()
+        else:
+            st.error("Page not found")
+    
+    with info_col:
+        # User information in right column, positioned at bottom
+        st.markdown("### 👤 User Information")
+        st.markdown(f"**User:** {st.session_state.username}")
+        st.markdown(f"**Role:** {role}")
+        
+        # Session information without expiry message - just show remaining time
+        remaining_time = get_remaining_session_time()
+        if remaining_time > 0:
+            st.markdown(f"**Session:** {remaining_time} min remaining")
+        
+        # Quick access navigation based on role
+        st.markdown("### 🔗 Quick Access")
+        
+        # Role-specific quick links
+        if role == "Initiator":
+            if st.button("📝 New Case", key="quick_case_entry", use_container_width=True):
+                st.session_state.selected_page = "Case Entry"
+                st.rerun()
+        elif role == "Reviewer":
+            if st.button("🔍 Review Cases", key="quick_reviewer", use_container_width=True):
+                st.session_state.selected_page = "Reviewer Panel"
+                st.rerun()
+        elif role == "Approver":
+            if st.button("✅ Approve Cases", key="quick_approver", use_container_width=True):
+                st.session_state.selected_page = "Approver Panel"
+                st.rerun()
+        elif role == "Legal Reviewer":
+            if st.button("⚖️ Legal Review", key="quick_legal", use_container_width=True):
+                st.session_state.selected_page = "Legal Panel"
+                st.rerun()
+        elif role == "Action Closure Authority":
+            if st.button("🔒 Close Cases", key="quick_closure", use_container_width=True):
+                st.session_state.selected_page = "Closure Panel"
+                st.rerun()
+        elif role == "Admin":
+            if st.button("🛠️ Admin Panel", key="quick_admin", use_container_width=True):
+                st.session_state.selected_page = "Admin Panel"
+                st.rerun()
+            if st.button("📊 Analytics", key="quick_analytics", use_container_width=True):
+                st.session_state.selected_page = "Analytics"
+                st.rerun()
+        
+        # Common quick access for all users
+        if st.button("🏠 Dashboard", key="quick_dashboard", use_container_width=True):
+            st.session_state.selected_page = "Dashboard"
+            st.rerun()
 
 if __name__ == "__main__":
     main()
